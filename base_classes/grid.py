@@ -1,6 +1,5 @@
 from copy import deepcopy
-from tiles import Tile
-import pygame
+from base_classes.tiles import Tile
 
 
 class Grid:
@@ -12,8 +11,9 @@ class Grid:
         self.cell_size = cell_size
         self.border = border
         if isinstance(grid, type(None)):
-            self.grid = [[Tile(self.left, self.top, self.cell_size, (j, i), "grey") for j in range(width)] for i in
-                         range(height)]
+            self.grid = [[Tile(self.left + j * self.cell_size, self.top + i * self.cell_size, (j, i),
+                               size=(self.cell_size, self.cell_size), color="grey") for j in range(width)]
+                         for i in range(height)]
         else:
             self.grid = deepcopy(grid)
 
@@ -26,7 +26,7 @@ class Grid:
         for i in range(self.height):
             for j in range(self.width):
                 if self.grid[i][j].collide_with_point(mouse_pos):
-                    return (i, j)
+                    return i, j
         return None
 
     def on_click(self, cell_cords):

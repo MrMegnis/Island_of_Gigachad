@@ -1,6 +1,6 @@
 import pygame
 from copy import deepcopy
-from grid import Grid
+from base_classes.grid import Grid
 
 
 class Level(Grid):
