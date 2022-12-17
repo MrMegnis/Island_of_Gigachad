@@ -6,7 +6,7 @@ class Movement_Input:
                  key_jump=pygame.K_SPACE, used_buttons=None):
 
         if used_buttons is None:
-            used_buttons = [True, True, True, True, True]
+            used_buttons = {"key_up": True, "key_down": True, "key_left": True, "key_right": True, "key_jump": True}
         self.used_buttons = used_buttons
         self.key_up = key_up
         self.key_down = key_down
@@ -16,23 +16,23 @@ class Movement_Input:
         self.direction = pygame.Vector2(0, 0)
 
     def normalized_direction(self) -> None:
-        self.direction.normalize()
+        self.direction = self.direction.normalize()
 
     def get_input(self) -> pygame.Vector2:
         keys = pygame.key.get_pressed()
-        if keys[self.key_up] and self.used_buttons[0]:
+        if keys[self.key_up] and self.used_buttons["key_up"]:
             self.direction.y = -1
-        elif keys[self.key_down] and self.used_buttons[1]:
+        elif keys[self.key_down] and self.used_buttons["key_down"]:
             self.direction.y = 1
         else:
             self.direction.y = 0
-        if keys[self.key_left] and self.used_buttons[2]:
+        if keys[self.key_left] and self.used_buttons["key_left"]:
             self.direction.x = -1
-        elif keys[self.key_right] and self.used_buttons[3]:
+        elif keys[self.key_right] and self.used_buttons["key_right"]:
             self.direction.x = 1
         else:
             self.direction.x = 0
-        if keys[self.key_jump] and self.used_buttons[4]:
+        if keys[self.key_jump] and self.used_buttons["key_jump"]:
             pass
         if self.direction.x != self.direction.y != 0:
             self.normalized_direction()

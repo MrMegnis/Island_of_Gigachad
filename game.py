@@ -3,6 +3,8 @@ from level import Level
 from player import Player
 from input_system.movement_input import Movement_Input
 from gui.button import Button
+from gui.layouts.vertical_layout import Vertical_Layout
+from gui.layouts.horizontal_layout import Horizontal_Layout
 from Vector import Vector
 
 
@@ -19,6 +21,13 @@ class Game:
         self.tile_size = 50
         self.player = Player(self.tile_size * 3, self.tile_size * 3, Movement_Input(), size=(self.tile_size, self.tile_size))
         self.button = Button(self.tile_size * 10, self.tile_size * 10)
+        # self.layout = Vertical_Layout(50, 50, 10)
+        # self.layout = Horizontal_Layout(50, 50, 10)
+        # self.layout.add_widget(Button(0,0,color="yellow"))
+        # self.layout.add_widget(Button(0, 0, color="red"))
+        # self.layout.add_widget(Button(0, 0, color="yellow"))
+        # self.layout.add_widget(Button(0, 0, color="red"))
+        # self.layout.add_widget(Button(0, 0, color="yellow"))
         self.level = Level(self.window_width // self.tile_size + 1, self.window_height // self.tile_size + 1, self.player, self.tile_size, 0, 0)
 
     def run(self) -> None:
@@ -33,6 +42,8 @@ class Game:
             self.level.update(self.screen)
             self.button.get_click()
             self.button.draw(self.screen)
+            # self.layout.update()
+            # self.layout.draw(self.screen)
             pygame.display.update()
             # print([[j.size for j in i] for i in self.level.grid])
 

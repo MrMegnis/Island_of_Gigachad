@@ -8,6 +8,7 @@ class Rectangle(pygame.sprite.Sprite):
         if isinstance(image, type(None)):
             if isinstance(size, type(None)):
                 self.image = pygame.surface.Surface((32, 32))
+                self.image.fill(color)
             else:
                 self.image = pygame.surface.Surface(size)
                 self.image.fill(color)
@@ -18,6 +19,16 @@ class Rectangle(pygame.sprite.Sprite):
         self.left = self.rect.left
         self.top = self.rect.top
         self.type_ = type_
+
+    def set_x(self,x):
+        self.rect.x = x
+
+    def set_y(self, y):
+        self.rect.y = y
+
+    def set_cords(self, cords):
+        self.rect.x = cords[0]
+        self.rect.y = cords[1]
 
     def draw(self, screen) -> None:
         screen.blit(self.image, self.rect)
