@@ -19,11 +19,11 @@ class Game:
         self.fps = 60
         self.clock = pygame.time.Clock()
         self.tile_size = 50
-        self.player = Player(self.tile_size * 3, self.tile_size * 3, Movement_Input(), size=(self.tile_size, self.tile_size))
+        self.player = Player(self.tile_size * 3, self.tile_size * 3, Movement_Input(), image="data\graphics\player\livesey\livesey_idle\livesey_idle_0.png")
         self.button = Button(self.tile_size * 10, self.tile_size * 10)
         self.layout = Vertical_Layout(50, 50, 10)
         self.layout = Horizontal_Layout(50, 50, 10)
-        self.layout.add_widget(Button(0,0,color="yellow"))
+        self.layout.add_widget(Button(0, 0, color="yellow"))
         self.layout.add_widget(Button(0, 0, color="red"))
         # self.layout.add_widget(Button(0, 0, color="yellow"))
         # self.layout.add_widget(Button(0, 0, color="red"))
@@ -31,7 +31,8 @@ class Game:
         self.layout.add_widget(Label(0, 0))
         self.layout.add_widget(Label(0, 0))
         self.label = Label(100, 500)
-        self.level = Level(self.window_width // self.tile_size + 1, self.window_height // self.tile_size + 1, self.player, self.tile_size, 0, 0)
+        self.level = Level(self.window_width // self.tile_size + 1, self.window_height // self.tile_size + 1,
+                           self.player, self.tile_size, 0, 0)
 
     def run(self) -> None:
         while self.game:
