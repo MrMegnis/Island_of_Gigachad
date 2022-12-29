@@ -9,6 +9,7 @@ class Button(Rectangle):
             self.func = lambda: print("click")
         else:
             self.func = func
+        self.can_click = True
 
     def on_click(self):
         self.func()
@@ -17,7 +18,17 @@ class Button(Rectangle):
         pressed = pygame.mouse.get_pressed()
         mouse_pos = pygame.mouse.get_pos()
         if pressed[0] and self.collide_with_point(mouse_pos):
-            self.on_click()
+            if self.can_click:
+                self.on_click()
+                self.clicked()
+        else:
+            self.unclicked()
+
+    def clicked(self):
+        self.can_click = False
+
+    def unclicked(self):
+        self.can_click = True
 
     def update(self, *args, **kwargs) -> None:
         self.get_click()

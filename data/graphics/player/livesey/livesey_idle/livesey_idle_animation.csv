@@ -1,4 +1,5 @@
-livesey_idle_0.png;500
-livesey_idle_1.png;500
-livesey_idle_2.png;500
-livesey_idle_3.png;500
+index;left;top;width;height;duration
+0;0;0;111;159;500
+1;111;0;111;159;500
+2;222;0;111;159;500
+3;333;0;111;159;500
