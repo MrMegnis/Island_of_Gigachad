@@ -3,7 +3,7 @@ from copy import deepcopy
 from base_classes.layer import Layer
 from scripts.unpack_column import unpack_column
 from scripts.unpack_json import unpack_json
-
+from enemy import Enemy
 
 class Level:
     def __init__(self, width, height, player, path=None, left=0, top=0):
@@ -41,8 +41,8 @@ class Level:
     def update(self, screen):
         self.draw(screen)
         if self.obstacles.collide_with(self.player.next_move()):
-            self.player.set_can_move(False)
+            self.player.lock_movement()
         else:
-            self.player.set_can_move(True)
+            self.player.unlock_movement()
         self.player.draw(screen)
         self.player.update()
