@@ -4,6 +4,7 @@ from level import Level
 from player import Player
 from enemy import Enemy
 from input_system.movement_input import Movement_Input
+from weapon import Weapon
 from scripts.unpack_column import unpack_column
 from gui.layouts.vertical_layout import Vertical_Layout
 from gui.layouts.horizontal_layout import Horizontal_Layout
@@ -22,9 +23,8 @@ class Game:
         self.fps = 60
         self.clock = pygame.time.Clock()
         self.tile_size = 50
-        self.player = Player(self.tile_size * 3, self.tile_size * 3, Movement_Input(),
-                             image="data/graphics/player/livesey/idle/idle.png")
-        self.enemy = Enemy(self.tile_size * 3, self.tile_size * 3, image="data/graphics/enemy/aboba_warrior/idle/idle.png")
+        self.player = Player(self.tile_size * 3, self.tile_size * 3, Movement_Input())
+        self.player.add_weapon(Weapon(self.tile_size * 3, self.tile_size * 3, (self.player.size[0]*3, self.player.size[1]), 10, self.player))
         self.button = Button(self.tile_size * 10, self.tile_size * 10, self.generate_level, color="red")
         # self.layout = Vertical_Layout(50, 50, 10)
         # self.layout = Horizontal_Layout(50, 50, 10)
@@ -48,8 +48,6 @@ class Game:
             self.screen.fill((0, 0, 0))
             self.clock.tick(self.fps)
             self.scene.update(self.screen)
-            self.enemy.update()
-            self.enemy.draw(self.screen)
             self.button.get_click()
             self.button.draw(self.screen)
             # self.label.draw(self.screen)

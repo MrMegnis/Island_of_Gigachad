@@ -12,7 +12,10 @@ class Rectangle(pygame.sprite.Sprite):
                 self.image = pygame.surface.Surface(size)
                 self.image.fill(color)
         else:
-            self.image = load_image(image)
+            if isinstance(image, str):
+                self.image = load_image(image)
+            else:
+                self.image = image
         self.rect = self.image.get_rect(topleft=(left, top))
         self.size = self.rect.size
         self.left = self.rect.left
@@ -30,6 +33,7 @@ class Rectangle(pygame.sprite.Sprite):
 
     def draw(self, screen) -> None:
         screen.blit(self.image, self.rect)
+        # pygame.draw.rect(screen,"red",self.rect)
 
     def collide_with_point(self, pos) -> bool:
         return self.rect.collidepoint(pos[0], pos[1])

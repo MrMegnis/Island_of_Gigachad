@@ -13,6 +13,8 @@ class Level:
         self.left = left
         self.top = top
         self.player = player
+        self.enemies = pygame.sprite.Group()
+        self.enemies.add(Enemy(500, 300))
         self.layers = self.load_layers(path)
         self.obstacles = self.load_obstacles(path)
 
@@ -40,9 +42,12 @@ class Level:
 
     def update(self, screen):
         self.draw(screen)
+        self.enemies.update()
+        self.enemies.draw(screen)
         if self.obstacles.collide_with(self.player.next_move()):
             self.player.lock_movement()
         else:
             self.player.unlock_movement()
+        self.player.update(self.enemies.sprites())
         self.player.draw(screen)
-        self.player.update()
+
