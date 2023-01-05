@@ -75,4 +75,4 @@ class Creature(Rectangle):
         else:
             self.unlock_movement()
         self.animator.next_frame()
-        self.draw_hitbox()
+        # self.draw_hitbox()
