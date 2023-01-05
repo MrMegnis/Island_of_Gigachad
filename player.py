@@ -32,7 +32,7 @@ class Player(Creature):
             self.can_attack = False
         else:
             self.can_attack = True
-        self.weapon.draw_weapon_range()
+        # self.weapon.draw_weapon_range()
         super(Player, self).update()
 
 
