@@ -16,6 +16,6 @@ class Attack_Input:
         keys = pygame.key.get_pressed()
         if (keys[self.attack] or mouse[mouse_buttons[self.attack]]) and self.used_buttons["attack"]:
             return "attack"
-        # elif (keys[self.alter_attack] or mouse[mouse_buttons[self.alter_attack]]) and self.used_buttons["alter_attack"]:
-        #     return "alter_attack"
+        elif (keys[self.alter_attack] or mouse[mouse_buttons[self.alter_attack]]) and self.used_buttons["alter_attack"]:
+            return "alter_attack"
         return ""

@@ -5,9 +5,7 @@ from player import Player
 from input_system.movement_input import Movement_Input
 from weapon import Weapon
 from scripts.unpack_column import unpack_column
-from gui.widgets.button import Button
 from main_menu import Main_Menu
-
 
 
 class Game:
@@ -22,11 +20,12 @@ class Game:
         self.clock = pygame.time.Clock()
         self.tile_size = 50
         self.player = Player(self.tile_size * 3, self.tile_size * 3, Movement_Input())
-        self.player.add_weapon(Weapon(self.tile_size * 3, self.tile_size * 3, (self.player.size[0]*3, self.player.size[1]), 10, self.player))
+        self.player.add_weapon(
+            Weapon(self.tile_size * 3, self.tile_size * 3, (self.player.size[0] * 3, self.player.size[1]), 10,
+                   self.player))
         # self.button = Button(self.tile_size * 10, self.tile_size * 10, self.generate_level, color="red")
         self.main_menu = Main_Menu(self.window_width, self.window_height, self.start_game, self.quit_game)
         self.scene = self.main_menu
-        # self.generate_level()
 
     def run(self) -> None:
         while self.game:
@@ -36,6 +35,7 @@ class Game:
             self.screen.fill((0, 0, 0))
             self.clock.tick(self.fps)
             self.scene.update(self.screen)
+
             # self.button.get_click()
             # self.button.draw(self.screen)
             pygame.display.update()
@@ -50,6 +50,7 @@ class Game:
     def quit_game(self):
         pygame.quit()
         exit()
+
 
 if __name__ == "__main__":
     game = Game()

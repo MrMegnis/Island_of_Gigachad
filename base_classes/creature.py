@@ -1,11 +1,11 @@
 import pygame
-import csv
 from base_classes.rectangle import Rectangle
 from animator import Animator
+from gui.widgets.health_bar import Health_Bar
 
 
 class Creature(Rectangle):
-    def __init__(self, left: int, top: int, image: str = None, size: tuple = None, move_speed: int = 100, hp: int = 50,
+    def __init__(self, left: int, top: int, size: tuple = None, move_speed: int = 100, hp: int = 50,
                  color="yellow", type_: str = None, name: str = None) -> None:
         self.direction = pygame.Vector2(0, 0)
         self.move_speed = move_speed
@@ -17,6 +17,7 @@ class Creature(Rectangle):
         image = self.animator.get_current_frame()
         super(Creature, self).__init__(left, top, image, size, color)
         self.hitbox = self.rect.copy()
+        self.hb = Health_Bar(self.rect.left, self.rect.bottom, (self.rect.size[0], self.rect.size[1] // 10), self)
 
     def move(self):
         if self.direction.x == 1 and self.move_speed != 0:
@@ -53,6 +54,7 @@ class Creature(Rectangle):
 
     def get_damage(self, attaker, damage):
         self.hp -= damage
+        self.hb.get_damage(damage)
         if self.hp <= 0:
             self.kill()
         else:
@@ -67,7 +69,7 @@ class Creature(Rectangle):
     def draw_hitbox(self):
         pygame.draw.rect(pygame.display.get_surface(), "green", self.hitbox, 5)
 
-    def update(self, *args, **kwargs) -> None:
+    def update(self, screen) -> None:
         if self.can_move:
             self.move()
         if self.animator.get_status() == "attack":
@@ -75,4 +77,5 @@ class Creature(Rectangle):
         else:
             self.unlock_movement()
         self.animator.next_frame()
+        self.hb.update(screen)
         # self.draw_hitbox()
