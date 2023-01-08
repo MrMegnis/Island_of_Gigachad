@@ -8,8 +8,7 @@ from scripts.unpack_json import unpack_json
 
 
 class Layer:
-    def __init__(self, width, height, layer_path: str, tile_path: str, left=0,
-                 top=0):
+    def __init__(self, width, height, layer_path: str, tile_path: str, left=0,top=0):
         self.width = width
         self.height = height
         self.left = left

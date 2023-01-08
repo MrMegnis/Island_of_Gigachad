@@ -1,10 +1,10 @@
 import pygame
 import random
 from level import Level
-from player import Player
-from input_system.movement_input import Movement_Input
 from weapon import Weapon
 from scripts.unpack_column import unpack_column
+from player import Player
+from input_system.movement_input import Movement_Input
 from main_menu import Main_Menu
 
 
@@ -42,7 +42,7 @@ class Game:
 
     def generate_level(self):
         level_path = "data/levels/" + random.choice(unpack_column("data/levels/levels.txt"))
-        self.scene = Level(self.window_width, self.window_height, self.player, level_path)
+        self.scene = Level(self.window_width, self.window_height, self.player, level_path, self.generate_level)
 
     def start_game(self):
         self.generate_level()
