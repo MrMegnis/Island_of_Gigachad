@@ -6,17 +6,22 @@ from animator import Animator
 
 class Creature(Rectangle):
     def __init__(self, left: int, top: int, image: str = None, size: tuple = None, move_speed: int = 100, hp: int = 50,
-                 color="yellow", type_: str = None, name: str = None) -> None:
+                 color="yellow", type_: str = None, name: str = None, gravity_strength: int = 10, jump_height: int = 25) -> None:
+        self.stats = {"hp": hp, "gravity_strength": gravity_strength, "speed": move_speed, "type": type_,
+                      "color": color, "jump_height": jump_height}
+        # надо убрать все переменные-характеристики игрока
         self.direction = pygame.Vector2(0, 0)
         self.move_speed = move_speed
         self.name = name
         self.hp = hp
         self.can_move = True
+        self.gravity_strength = gravity_strength
         self.type_ = type_
-        self.animator = Animator(self, ["idle", "move_right", "move_left", "attack", "hit"])
+        self.animator = Animator(self, ["idle", "move_right", "move_left", "attack", "hit", "jump"])
         image = self.animator.get_current_frame()
         super(Creature, self).__init__(left, top, image, size, color)
         self.hitbox = self.rect.copy()
+        self.jump_count = 0
 
     def move(self):
         if self.direction.x == 1 and self.move_speed != 0:
@@ -51,6 +56,20 @@ class Creature(Rectangle):
         rect.topleft = (left, top)
         return rect
 
+    def next_gravity_move(self, gravity_strength=None):
+        if not gravity_strength:
+            gravity_strength = self.gravity_strength
+        left = self.rect.left
+        top = self.rect.top
+        top += gravity_strength
+        rect = self.rect.copy()
+        rect.topleft = (left, top)
+        return rect
+
+    def gravity_move(self, y):
+        self.rect.y += y
+        self.hitbox.y += y
+
     def get_damage(self, attaker, damage):
         self.hp -= damage
         if self.hp <= 0:
@@ -63,6 +82,10 @@ class Creature(Rectangle):
 
     def make_attack(self):
         self.animator.trigger("attack")
+
+    def do_jump(self):
+        self.rect.y -= self.jump_count
+        self.hitbox.y -= self.jump_count
 
     def draw_hitbox(self):
         pygame.draw.rect(pygame.display.get_surface(), "green", self.hitbox, 5)

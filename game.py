@@ -9,10 +9,10 @@ from gui.widgets.button import Button
 from main_menu import Main_Menu
 
 
-
 class Game:
     def __init__(self) -> None:
         pygame.init()
+        pygame.mixer.init()
         self.window_width = 1000
         self.window_height = 800
         self.screen = pygame.display.set_mode((self.window_width, self.window_height))
@@ -50,6 +50,7 @@ class Game:
     def quit_game(self):
         pygame.quit()
         exit()
+
 
 if __name__ == "__main__":
     game = Game()
