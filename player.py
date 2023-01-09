@@ -2,6 +2,7 @@ import pygame
 from base_classes.creature import Creature
 from input_system.movement_input import Movement_Input
 from input_system.attack_input import Attack_Input
+from input_system.jump_input import Jump_Input
 from weapon import Weapon
 
 
@@ -12,11 +13,13 @@ class Player(Creature):
         super(Player, self).__init__(left, top, image, move_speed=move_speed, hp=hp, type_="player", name=name)
         self.movement_input = movement_input
         self.attack_input = Attack_Input()
+        self.jump_input = Jump_Input()
         if isinstance(weapon, type(None)):
             self.weapon = Weapon(0, 0, (0, 0), 0, self)
         else:
             self.weapon = weapon
         self.can_attack = True
+        self.can_jump = True
         self.can_apply_damage = True
         self.hb.resize_hb((300, 50))
         self.hb.change_cords(0, 0)
@@ -27,6 +30,8 @@ class Player(Creature):
     def update(self, enemies, screen) -> None:
         self.direction = self.movement_input.get_input()
         attack = self.attack_input.get_input()
+
+        jump = self.jump_input.get_input()
         if self.can_attack:
             if attack == "attack":
                 self.weapon.set_cords(self.rect.topleft)
@@ -44,5 +49,10 @@ class Player(Creature):
             self.can_apply_damage = True
         if self.animator.status != "attack":
             self.can_attack = True
+
+        if jump != "" and self.can_jump:
+            self.jump_count = self.stats["jump_height"]
+            self.animator.trigger("jump")
+
         # self.weapon.draw_weapon_range()
         super(Player, self).update(screen)

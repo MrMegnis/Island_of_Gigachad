@@ -3,6 +3,7 @@ from base_classes.layer import Layer
 from scripts.unpack_column import unpack_column
 from scripts.unpack_json import unpack_json
 from enemy import Enemy
+from animator import Animator
 
 
 class Level:
@@ -48,5 +49,22 @@ class Level:
             self.player.lock_movement()
         else:
             self.player.unlock_movement()
+
+        if self.obstacles.collide_with(self.player.next_gravity_move()):
+            for i in range(self.player.gravity_strength, -1, -1):
+                if not self.obstacles.collide_with(self.player.next_gravity_move(i)):
+                    self.player.gravity_move(i)
+                    self.player.animator.trigger("idle")
+        else:
+            self.player.gravity_move(self.player.gravity_strength)
+            self.player.can_jump = False
+
+        if self.obstacles.collide_with(self.player.next_gravity_move(1)):
+            self.player.can_jump = True
+
+        if self.player.jump_count != 0:
+            self.player.do_jump()
+            self.player.jump_count -= 1
+
         self.player.update(self.enemies.sprites(), screen)
         self.player.draw(screen)

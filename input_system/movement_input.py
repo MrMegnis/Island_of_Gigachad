@@ -6,7 +6,7 @@ class Movement_Input:
                  key_jump=pygame.K_SPACE, used_buttons=None):
 
         if used_buttons is None:
-            used_buttons = {"key_up": True, "key_down": True, "key_left": True, "key_right": True, "key_jump": True}
+            used_buttons = {"key_up": False, "key_down": False, "key_left": True, "key_right": True, "key_jump": True}
         self.used_buttons = used_buttons
         self.key_up = key_up
         self.key_down = key_down
