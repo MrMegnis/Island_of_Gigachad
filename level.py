@@ -1,10 +1,10 @@
 import pygame
-from copy import deepcopy
 from base_classes.layer import Layer
 from scripts.unpack_column import unpack_column
 from scripts.unpack_json import unpack_json
 from enemy import Enemy
 from animator import Animator
+
 
 class Level:
     def __init__(self, width, height, player, path=None, left=0, top=0):
@@ -21,7 +21,7 @@ class Level:
 
     def load_layers(self, path):
         layers = []
-        tiles_path = path+"/tiles.json"
+        tiles_path = path + "/tiles.json"
         for layer_path in unpack_column(path + "/layers.txt"):
             layers.append(Layer(self.width, self.height, layer_path, tiles_path, self.left, self.top))
         return layers
@@ -43,7 +43,7 @@ class Level:
 
     def update(self, screen):
         self.draw(screen)
-        self.enemies.update()
+        self.enemies.update(screen)
         self.enemies.draw(screen)
         if self.obstacles.collide_with(self.player.next_move()):
             self.player.lock_movement()
@@ -66,6 +66,5 @@ class Level:
             self.player.do_jump()
             self.player.jump_count -= 1
 
-        self.player.update(self.enemies.sprites())
+        self.player.update(self.enemies.sprites(), screen)
         self.player.draw(screen)
-

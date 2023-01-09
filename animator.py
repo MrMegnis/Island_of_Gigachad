@@ -89,7 +89,7 @@ class Animator:
     def get_current_frame(self):
         return self.animation[self.status][self.frame_index][0]
 
-    def load_animation(self, path: str, sheet_path: str = None, settings_path:str=None):
+    def load_animation(self, path: str, sheet_path: str = None, settings_path: str = None):
         animation = []
         settings = dict()
         if not isinstance(settings_path, type(None)):
@@ -112,6 +112,6 @@ class Animator:
                     if len(settings.keys()) != 0:
                         center = (int(settings["center_x"]), int(settings["center_y"]))
                     else:
-                        center = (size[0]//2, size[1]//2)
+                        center = (size[0] // 2, size[1] // 2)
                     animation.append((sheet.subsurface(rect), int(i["duration"]), center))
         return animation

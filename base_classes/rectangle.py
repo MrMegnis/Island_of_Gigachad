@@ -1,6 +1,7 @@
 import pygame
 from scripts.load_image import load_image
 
+
 class Rectangle(pygame.sprite.Sprite):
     def __init__(self, left: int, top: int, image: str = None, size: tuple = None, color: str = "black") -> None:
         super(Rectangle, self).__init__()
@@ -16,6 +17,7 @@ class Rectangle(pygame.sprite.Sprite):
                 self.image = load_image(image)
             else:
                 self.image = image
+        self.type_ = None
         self.rect = self.image.get_rect(topleft=(left, top))
         self.size = self.rect.size
         self.left = self.rect.left

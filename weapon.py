@@ -13,7 +13,6 @@ class Weapon(Rectangle):
         self.rect.y += y
 
     def hit(self, targets):
-        print("aboba")
         hited = []
         for target in targets:
             if self.rect.colliderect(target.hitbox):
