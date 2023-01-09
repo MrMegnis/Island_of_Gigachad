@@ -3,19 +3,28 @@ from base_classes.layer import Layer
 from scripts.unpack_column import unpack_column
 from scripts.unpack_json import unpack_json
 from enemy import Enemy
+from player import Player
+from input_system.movement_input import Movement_Input
+from interactable_object import Intaractable_Object
 from animator import Animator
 
 
+
 class Level:
-    def __init__(self, width, height, player, path=None, left=0, top=0):
+    def __init__(self, width, height, player, path, end_of_level_func, left=0, top=0):
         # super(Level, self).__init__(width, height, path, cell_size, left, top, border)
         self.width = width
         self.height = height
         self.left = left
         self.top = top
-        self.player = player
+        self.player = Player(self.tile_size * 3, self.tile_size * 3, "data/characters/aboba_warrior", Movement_Input())
         self.enemies = pygame.sprite.Group()
+        self.enemies.add(Enemy(500, 250))
+        self.interact_objs = pygame.sprite.Group()
+        self.interact_objs.add(Intaractable_Object(800, 300, pygame.K_e, 100, 1000, end_of_level_func, image = "data/graphics/interactavle_objects/tab.png"))
+
         self.enemies.add(Enemy(500, 300, "data/enemies/aboba_warrior"))
+
         self.layers = self.load_layers(path)
         self.obstacles = self.load_obstacles(path)
 
@@ -45,6 +54,7 @@ class Level:
         self.draw(screen)
         self.enemies.update(screen)
         self.enemies.draw(screen)
+        self.interact_objs.update(self.player, screen)
         if self.obstacles.collide_with(self.player.next_move()):
             self.player.lock_movement()
         else:
