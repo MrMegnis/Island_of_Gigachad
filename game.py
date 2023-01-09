@@ -1,7 +1,7 @@
 import pygame
 import random
 from level import Level
-from weapon import Weapon
+
 from scripts.unpack_column import unpack_column
 from player import Player
 from input_system.movement_input import Movement_Input
@@ -21,9 +21,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.tile_size = 50
         self.player = Player(self.tile_size * 3, self.tile_size * 3, "data/characters/aboba_warrior", Movement_Input())
-        self.player.add_weapon(
-            Weapon(self.player.hitbox.left, self.player.hitbox.top, (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10,
-                   self.player))
+
         # self.button = Button(self.tile_size * 10, self.tile_size * 10, self.generate_level, color="red")
         self.main_menu = Main_Menu(self.window_width, self.window_height, self.start_game, self.quit_game)
         self.scene = self.main_menu

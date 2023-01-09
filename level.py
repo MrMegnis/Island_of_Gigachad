@@ -7,7 +7,7 @@ from player import Player
 from input_system.movement_input import Movement_Input
 from interactable_object import Intaractable_Object
 from animator import Animator
-
+from weapon import Weapon
 
 
 class Level:
@@ -17,11 +17,14 @@ class Level:
         self.height = height
         self.left = left
         self.top = top
-        self.player = Player(self.tile_size * 3, self.tile_size * 3, "data/characters/aboba_warrior", Movement_Input())
+        self.player = Player(300, 200, "data/characters/aboba_warrior", Movement_Input())
+        self.player.add_weapon(
+            Weapon(self.player.hitbox.left, self.player.hitbox.top,
+                   (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10,
+                   self.player))
         self.enemies = pygame.sprite.Group()
-        self.enemies.add(Enemy(500, 250))
         self.interact_objs = pygame.sprite.Group()
-        self.interact_objs.add(Intaractable_Object(800, 300, pygame.K_e, 100, 1000, end_of_level_func, image = "data/graphics/interactavle_objects/tab.png"))
+        self.interact_objs.add(Intaractable_Object(800, 100, pygame.K_e, 100, 1000, end_of_level_func, image = "data/graphics/interactavle_objects/tab.png"))
 
         self.enemies.add(Enemy(500, 300, "data/enemies/aboba_warrior"))
 
