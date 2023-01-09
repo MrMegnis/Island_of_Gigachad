@@ -11,17 +11,18 @@ from main_menu import Main_Menu
 class Game:
     def __init__(self) -> None:
         pygame.init()
+        pygame.mixer.init()
         self.window_width = 1000
-        self.window_height = 800
+        self.window_height = 900
         self.screen = pygame.display.set_mode((self.window_width, self.window_height))
         pygame.display.set_caption("Gigachad's Island")
         self.game = True
         self.fps = 60
         self.clock = pygame.time.Clock()
         self.tile_size = 50
-        self.player = Player(self.tile_size * 3, self.tile_size * 3, Movement_Input())
+        self.player = Player(self.tile_size * 3, self.tile_size * 3, "data/characters/aboba_warrior", Movement_Input())
         self.player.add_weapon(
-            Weapon(self.tile_size * 3, self.tile_size * 3, (self.player.size[0] * 3, self.player.size[1]), 10,
+            Weapon(self.player.hitbox.left, self.player.hitbox.top, (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10,
                    self.player))
         # self.button = Button(self.tile_size * 10, self.tile_size * 10, self.generate_level, color="red")
         self.main_menu = Main_Menu(self.window_width, self.window_height, self.start_game, self.quit_game)

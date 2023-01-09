@@ -6,6 +6,8 @@ from enemy import Enemy
 from player import Player
 from input_system.movement_input import Movement_Input
 from interactable_object import Intaractable_Object
+from animator import Animator
+
 
 
 class Level:
@@ -15,11 +17,14 @@ class Level:
         self.height = height
         self.left = left
         self.top = top
-        self.player = self.player = Player(100, 250, Movement_Input())
+        self.player = Player(self.tile_size * 3, self.tile_size * 3, "data/characters/aboba_warrior", Movement_Input())
         self.enemies = pygame.sprite.Group()
         self.enemies.add(Enemy(500, 250))
         self.interact_objs = pygame.sprite.Group()
         self.interact_objs.add(Intaractable_Object(800, 300, pygame.K_e, 100, 1000, end_of_level_func, image = "data/graphics/interactavle_objects/tab.png"))
+
+        self.enemies.add(Enemy(500, 300, "data/enemies/aboba_warrior"))
+
         self.layers = self.load_layers(path)
         self.obstacles = self.load_obstacles(path)
 
@@ -41,7 +46,7 @@ class Level:
             i.draw(screen)
 
     def player_collide(self, layer):
-        if layer.collide_with(self.player.rect):
+        if layer.collide_with(self.player.hitbox):
             return True
         return False
 
@@ -54,5 +59,24 @@ class Level:
             self.player.lock_movement()
         else:
             self.player.unlock_movement()
+
+        if self.obstacles.collide_with(self.player.next_gravity_move()):
+            for i in range(self.player.gravity_strength, -1, -1):
+                if not self.obstacles.collide_with(self.player.next_gravity_move(i)):
+                    self.player.gravity_move(i)
+                    self.player.animator.trigger("idle")
+        else:
+            self.player.gravity_move(self.player.gravity_strength)
+            self.player.can_jump = False
+
+        if self.obstacles.collide_with(self.player.next_gravity_move(1)):
+            if not self.player.can_jump:
+                self.player.animator.return_to_main_status()
+            self.player.can_jump = True
+
+        if self.player.jump_count != 0:
+            self.player.do_jump()
+            self.player.jump_count -= 1
+
         self.player.update(self.enemies.sprites(), screen)
         self.player.draw(screen)
