@@ -15,7 +15,7 @@ class Level:
         self.top = top
         self.player = player
         self.enemies = pygame.sprite.Group()
-        self.enemies.add(Enemy(500, 300))
+        self.enemies.add(Enemy(500, 300, "data/enemies/aboba_warrior"))
         self.layers = self.load_layers(path)
         self.obstacles = self.load_obstacles(path)
 
@@ -37,7 +37,7 @@ class Level:
             i.draw(screen)
 
     def player_collide(self, layer):
-        if layer.collide_with(self.player.rect):
+        if layer.collide_with(self.player.hitbox):
             return True
         return False
 
@@ -60,6 +60,8 @@ class Level:
             self.player.can_jump = False
 
         if self.obstacles.collide_with(self.player.next_gravity_move(1)):
+            if not self.player.can_jump:
+                self.player.animator.return_to_main_status()
             self.player.can_jump = True
 
         if self.player.jump_count != 0:
