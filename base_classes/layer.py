@@ -20,23 +20,20 @@ class Layer:
         raw_layer = unpack_layer(layer_path)
         tiles_data = unpack_json(tiles_path)
         self.tile_size = tiles_data["tile_size"]
-        layer = []
+        layer = pygame.sprite.Group()
         for row in range(len(raw_layer)):
-            layer.append([])
+            # layer.append([])
             for i in range(len(raw_layer[row])):
                 tile_image = tiles_data[raw_layer[row][i]]
                 if tile_image != "":
-                    layer[-1].append(Tile(self.left + self.tile_size * i, self.top + self.tile_size * row, tile_image))
+                    layer.add(Tile(self.left + self.tile_size * i, self.top + self.tile_size * row, tile_image))
         return layer
 
     def collide_with(self, rect):
         for i in self.layer:
-            for j in i:
-                if rect.colliderect(j.rect):
-                    return True
+            if rect.colliderect(i.rect):
+                return True
         return False
 
     def draw(self, screen):
-        for row in self.layer:
-            for tile in row:
-                tile.draw(screen)
+        self.layer.draw(screen)

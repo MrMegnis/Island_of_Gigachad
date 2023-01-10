@@ -6,18 +6,19 @@ from scripts.unpack_json import unpack_json
 
 
 class Creature(Rectangle):
-    def __init__(self, left: int, top: int, settings_path: str, move_speed: int = 100, hp: int = 50,
+    def __init__(self, left: int, top: int, settings_path: str, move_speed: int = 100, hp: int = 50, damage: int = 10,
                  type_: str = None, name: str = None, gravity_strength: int = 10, jump_height: int = 25) -> None:
-        self.stats = {"hp": hp, "gravity_strength": gravity_strength, "speed": move_speed, "type": type_,
-                      "jump_height": jump_height}
+        self.base_stats = {"hp": hp, "damage": damage, "gravity_strength": gravity_strength, "move_speed": move_speed,
+                           "type": type_,
+                           "jump_height": jump_height}
+        self.stats = self.base_stats.copy()
+        # self.current_stats = self.base_stats.copy()
+        self.current_hp = self.stats["hp"]
         # надо убрать все переменные-характеристики игрока
 
         self.direction = pygame.Vector2(0, 0)
-        self.move_speed = move_speed
         self.name = name
-        self.hp = hp
         self.can_move = True
-        self.gravity_strength = gravity_strength
         self.type_ = type_
         self.animator = Animator(self, ["idle", "move_right", "move_left", "attack", "hit", "jump"])
         image = self.animator.get_current_frame()
@@ -25,13 +26,12 @@ class Creature(Rectangle):
         self.hitbox = self.rect
         self.load_settings(settings_path)
         self.jump_count = 0
-        self.hb = Health_Bar(self.hitbox.left, self.hitbox.bottom, (self.hitbox.size[0], self.hitbox.size[1] // 10), self)
+        self.hb = Health_Bar(self.hitbox.left, self.hitbox.bottom, (self.hitbox.size[0], self.hitbox.size[1] // 10),
+                             self)
 
     def load_settings(self, path):
-        settings = unpack_json(path+"/settings.json")
+        settings = unpack_json(path + "/settings.json")
         hitbox_settings = settings["hitbox"]
-        left = self.left + hitbox_settings["left"]
-        top = self.top + hitbox_settings["top"]
         width = hitbox_settings["width"]
         height = hitbox_settings["height"]
         self.hitbox = pygame.rect.Rect(self.left, self.top, width, height)
@@ -40,16 +40,16 @@ class Creature(Rectangle):
 
     def move(self):
         if self.animator.status != "jump":
-            if self.direction.x == 1 and self.move_speed != 0:
+            if self.direction.x == 1 and self.stats["move_speed"] != 0:
                 self.animator.set_bool("move_right", True)
-            elif self.direction.x == -1 and self.move_speed != 0:
+            elif self.direction.x == -1 and self.stats["move_speed"] != 0:
                 self.animator.set_bool("move_left", True)
             else:
                 self.animator.set_bool("move_right", False)
                 self.animator.set_bool("move_left", False)
         # print(int(self.direction.x), self.move_speed, int(self.direction.x) * self.move_speed / 60)
-        x = int(self.direction.x * self.move_speed / 60)
-        y = int(self.direction.y * self.move_speed / 60)
+        x = int(self.direction.x * self.stats["move_speed"] / 60)
+        y = int(self.direction.y * self.stats["move_speed"] / 60)
         self.rect.x += x
         self.rect.y += y
         self.hitbox.x += x
@@ -63,18 +63,17 @@ class Creature(Rectangle):
         self.can_move = True
 
     def next_move(self):
-        # print(self.rect.center,"a")
         left = self.hitbox.left
-        left += int(self.direction.x * self.move_speed / 60)
+        left += int(self.direction.x * self.stats["move_speed"] / 60)
         top = self.hitbox.top
-        top += int(self.direction.y * self.move_speed / 60)
+        top += int(self.direction.y * self.stats["move_speed"] / 60)
         rect = self.hitbox.copy()
         rect.topleft = (left, top)
         return rect
 
     def next_gravity_move(self, gravity_strength=None):
         if not gravity_strength:
-            gravity_strength = self.gravity_strength
+            gravity_strength = self.stats["gravity_strength"]
         left = self.hitbox.left
         top = self.hitbox.top
         top += gravity_strength
@@ -87,9 +86,9 @@ class Creature(Rectangle):
         self.hitbox.y += y
 
     def get_damage(self, attaker, damage):
-        self.hp -= damage
+        self.current_hp -= damage
         self.hb.get_damage(damage)
-        if self.hp <= 0:
+        if self.current_hp <= 0:
             self.kill()
         else:
             self.get_hit(attaker)
@@ -118,3 +117,4 @@ class Creature(Rectangle):
         self.animator.next_frame()
         self.hb.update(screen)
         # self.draw_hitbox()
+        self.draw(screen)

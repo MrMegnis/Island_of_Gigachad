@@ -8,7 +8,6 @@ class Enemy(Creature):
         super(Enemy, self).__init__(left, top, settings_path, move_speed=move_speed, type_="enemy", name=name)
         self.hb.lock_hb_on_owner(self.hitbox.bottomleft)
 
-
     def update(self, screen) -> None:
         super(Enemy, self).update(screen)
         self.hb.update_lock_point(self.hitbox.bottomleft)

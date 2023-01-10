@@ -15,20 +15,27 @@ class Health_Bar:
         self.bar.fill(bar_color)
         self.bar_rect = self.bar.get_rect(center=self.background_rect.center)
         self.bar_color = bar_color
-        self.hp = owner.hp
-        self.current_hp = self.hp
+        self.owner = owner
+        self.hp = 0
+        self.current_hp = 0
+        self.update_hp()
         self.lock_on_owner = False
         self.lock_point = lock_pont
 
-    def get_damage(self, damage):
-        self.current_hp -= damage
-        if self.current_hp < 0:
-            return
+    def update_hp(self):
+        self.hp = self.owner.stats["hp"]
+        self.current_hp = self.owner.current_hp
+        self.update_bar()
+
+    def update_bar(self):
         percentage = self.current_hp / self.hp
         size = self.bar_rect.size
         new_size = (size[0] * percentage, size[1])
         self.bar = pygame.surface.Surface(new_size)
         self.bar.fill(self.bar_color)
+
+    def get_damage(self, damage):
+        self.update_hp()
 
     def draw_background(self, screen):
         screen.blit(self.background, self.background_rect)

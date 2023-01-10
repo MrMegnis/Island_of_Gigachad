@@ -48,31 +48,36 @@ class Level:
         for i in self.layers:
             i.draw(screen)
 
-    def player_collide(self, layer):
-        if layer.collide_with(self.player.hitbox):
-            return True
-        return False
+    def rect_collide(self, rect, layer):
+        r = pygame.sprite.Sprite()
+        r.rect = rect
+        return pygame.sprite.spritecollideany(r, layer)
 
-    def update(self, screen):
-        self.draw(screen)
-        self.enemies.update(screen)
-        self.enemies.draw(screen)
-        self.interact_objs.update(self.player, screen)
-        if self.obstacles.collide_with(self.player.next_move()):
+    def player_collide(self, layer):
+        r = pygame.sprite.Sprite()
+        r.rect = self.player.hitbox
+        return pygame.sprite.spritecollideany(r, layer)
+        # if layer.collide_with(self.player.hitbox):
+        #     return True
+        # return False
+
+    def player_update(self, screen):
+        if self.rect_collide(self.player.next_move(), self.obstacles.layer):
             self.player.lock_movement()
         else:
             self.player.unlock_movement()
 
-        if self.obstacles.collide_with(self.player.next_gravity_move()):
-            for i in range(self.player.gravity_strength, -1, -1):
-                if not self.obstacles.collide_with(self.player.next_gravity_move(i)):
+        collide_gravity = self.rect_collide(self.player.next_gravity_move(), self.obstacles.layer)
+        if collide_gravity:
+            for i in range(self.player.stats["gravity_strength"], -1, -1):
+                if not self.rect_collide(self.player.next_gravity_move(i), self.obstacles.layer):
                     self.player.gravity_move(i)
-                    self.player.animator.trigger("idle")
+                    self.player.animator.return_to_main_status()
         else:
-            self.player.gravity_move(self.player.gravity_strength)
+            self.player.gravity_move(self.player.stats["gravity_strength"])
             self.player.can_jump = False
 
-        if self.obstacles.collide_with(self.player.next_gravity_move(1)):
+        if self.rect_collide(self.player.next_gravity_move(1), self.obstacles.layer):
             if not self.player.can_jump:
                 self.player.animator.return_to_main_status()
             self.player.can_jump = True
@@ -82,4 +87,10 @@ class Level:
             self.player.jump_count -= 1
 
         self.player.update(self.enemies.sprites(), screen)
-        self.player.draw(screen)
+
+    def update(self, screen):
+        self.draw(screen)
+        self.enemies.update(screen)
+        self.player_update(screen)
+        self.interact_objs.update(self.player, screen)
+
