@@ -7,7 +7,7 @@ from weapon import Weapon
 
 
 class Player(Creature):
-    def __init__(self, left: int, top: int, settings_path : str, movement_input: Movement_Input, weapon: Weapon = None, move_speed: int = 200, hp: int = 10, name: str = "aboba_warrior") -> None:
+    def __init__(self, left: int, top: int, settings_path : str, movement_input: Movement_Input, weapon: Weapon = None, move_speed: int = 500, hp: int = 10, name: str = "aboba_warrior") -> None:
         super(Player, self).__init__(left, top, settings_path, move_speed=move_speed, hp=hp, type_="player", name=name)
         self.movement_input = movement_input
         self.attack_input = Attack_Input()
@@ -32,7 +32,7 @@ class Player(Creature):
         jump = self.jump_input.get_input()
         if self.can_attack:
             if attack == "attack":
-                self.weapon.set_cords(self.hitbox.topleft)
+                self.weapon.set_cords(self.rect.topleft)
                 self.make_attack()
                 self.lock_movement()
                 self.can_attack = False
@@ -50,7 +50,10 @@ class Player(Creature):
 
         if jump != "" and self.can_jump:
             self.jump_count = self.stats["jump_height"]
-            self.animator.set_bool("jump", True)
+            if self.direction.x == -1:
+                self.animator.trigger("jump_left")
+            else:
+                self.animator.trigger("jump_right")
 
         # self.weapon.draw_weapon_range()
         super(Player, self).update(screen)

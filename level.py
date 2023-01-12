@@ -63,23 +63,31 @@ class Level:
         else:
             self.player.unlock_movement()
 
+        if self.player.jump_count != 0:
+            if not self.obstacles.collide_with(self.player.next_jump_move()):
+                self.player.do_jump()
+            else:
+                self.player.jump_count = 1
+            self.player.jump_count -= 1
+
         if self.obstacles.collide_with(self.player.next_gravity_move()):
             for i in range(self.player.gravity_strength, -1, -1):
                 if not self.obstacles.collide_with(self.player.next_gravity_move(i)):
                     self.player.gravity_move(i)
-                    self.player.animator.trigger("idle")
         else:
             self.player.gravity_move(self.player.gravity_strength)
+            if self.player.jump_count == 0:
+                if self.player.direction.x == -1:
+                    self.player.animator.trigger("fall_left")
+                else:
+                    self.player.animator.trigger("fall_right")
             self.player.can_jump = False
 
         if self.obstacles.collide_with(self.player.next_gravity_move(1)):
             if not self.player.can_jump:
                 self.player.animator.return_to_main_status()
             self.player.can_jump = True
-
-        if self.player.jump_count != 0:
-            self.player.do_jump()
-            self.player.jump_count -= 1
+        # Вот это я насрал
 
         self.player.update(self.enemies.sprites(), screen)
         self.player.draw(screen)

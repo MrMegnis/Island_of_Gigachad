@@ -7,7 +7,7 @@ from scripts.unpack_json import unpack_json
 
 class Creature(Rectangle):
     def __init__(self, left: int, top: int, settings_path: str, move_speed: int = 100, hp: int = 50,
-                 type_: str = None, name: str = None, gravity_strength: int = 10, jump_height: int = 25) -> None:
+                 type_: str = None, name: str = None, gravity_strength: int = 10, jump_height: int = 28) -> None:
         self.stats = {"hp": hp, "gravity_strength": gravity_strength, "speed": move_speed, "type": type_,
                       "jump_height": jump_height}
         # надо убрать все переменные-характеристики игрока
@@ -19,7 +19,8 @@ class Creature(Rectangle):
         self.can_move = True
         self.gravity_strength = gravity_strength
         self.type_ = type_
-        self.animator = Animator(self, ["idle", "move_right", "move_left", "attack", "hit", "jump"])
+        self.animator = Animator(self, ["idle", "move_right", "move_left", "attack", "hit", "jump_right", "jump_left",
+                                        "fall_right", "fall_left"])
         image = self.animator.get_current_frame()
         super(Creature, self).__init__(left, top, image)
         self.hitbox = self.rect
@@ -39,7 +40,8 @@ class Creature(Rectangle):
         self.rect.top = self.top - hitbox_settings["top"]
 
     def move(self):
-        if self.animator.status != "jump":
+        if self.animator.status != "jump_right" and self.animator.status != "jump_left" and \
+                self.animator.status != "fall_left" and self.animator.status != "fall_right":
             if self.direction.x == 1 and self.move_speed != 0:
                 self.animator.set_bool("move_right", True)
             elif self.direction.x == -1 and self.move_speed != 0:
@@ -104,6 +106,14 @@ class Creature(Rectangle):
         self.rect.y -= self.jump_count
         self.hitbox.y -= self.jump_count
 
+    def next_jump_move(self):
+        left = self.hitbox.left
+        top = self.hitbox.top
+        top -= self.jump_count - self.gravity_strength
+        rect = self.hitbox.copy()
+        rect.topleft = (left, top)
+        return rect
+
     def draw_hitbox(self):
         pygame.draw.rect(pygame.display.get_surface(), "green", self.hitbox, 5)
         pygame.draw.rect(pygame.display.get_surface(), "red", self.rect, 5)
@@ -117,4 +127,4 @@ class Creature(Rectangle):
             self.unlock_movement()
         self.animator.next_frame()
         self.hb.update(screen)
-        # self.draw_hitbox()
+        self.draw_hitbox()
