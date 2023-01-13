@@ -65,12 +65,14 @@ class Player(Creature):
     def update_self_damage(self):
         self.weapon.change_damage(self.stats["damage"])
 
+    def update_direction(self):
+        self.direction = self.movement_input.get_input()
+
 
     def update(self, enemies, screen) -> None:
         self.hp = self.stats["hp"]
         self.move_speed = self.stats["move_speed"]
         # self.inventory.update(screen)
-        self.direction = self.movement_input.get_input()
         attack = self.attack_input.get_input()
 
         jump = self.jump_input.get_input()

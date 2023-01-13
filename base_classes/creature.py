@@ -7,7 +7,7 @@ from scripts.unpack_json import unpack_json
 
 class Creature(Rectangle):
     def __init__(self, left: int, top: int, settings_path: str, move_speed: int = 100, hp: int = 50, damage: int = 10,
-                 type_: str = None, name: str = None, gravity_strength: int = 10, jump_height: int = 25) -> None:
+                 type_: str = None, name: str = None, gravity_strength: int = 10, jump_height: int = 28) -> None:
         self.base_stats = {"hp": hp, "damage": damage, "gravity_strength": gravity_strength, "move_speed": move_speed,
                            "type": type_,
                            "jump_height": jump_height}
@@ -42,7 +42,7 @@ class Creature(Rectangle):
     def move(self):
         if self.animator.status != "jump_right" and self.animator.status != "jump_left" and \
                 self.animator.status != "fall_left" and self.animator.status != "fall_right":
-            if self.direction.x == 1 and self.move_speed != 0:
+            if self.direction.x == 1 and self.stats["move_speed"] != 0:
                 self.animator.set_bool("move_right", True)
             elif self.direction.x == -1 and self.stats["move_speed"] != 0:
                 self.animator.set_bool("move_left", True)
@@ -108,7 +108,7 @@ class Creature(Rectangle):
     def next_jump_move(self):
         left = self.hitbox.left
         top = self.hitbox.top
-        top -= self.jump_count - self.gravity_strength
+        top -= self.jump_count - self.stats["gravity_strength"]
         rect = self.hitbox.copy()
         rect.topleft = (left, top)
         return rect
@@ -126,5 +126,5 @@ class Creature(Rectangle):
             self.unlock_movement()
         self.animator.next_frame()
         self.hb.update(screen)
-        # self.draw_hitbox()
+        self.draw_hitbox()
         self.draw(screen)
