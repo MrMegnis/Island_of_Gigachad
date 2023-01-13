@@ -8,7 +8,7 @@ from weapon import Weapon
 
 
 class Player(Creature):
-    def __init__(self, left: int, top: int, settings_path : str, movement_input: Movement_Input, weapon: Weapon = None, move_speed: int = 500, hp: int = 10, name: str = "aboba_warrior") -> None:
+    def __init__(self, left: int, top: int, settings_path : str, movement_input: Movement_Input, weapon: Weapon = None, move_speed: int = 500, hp: int = 100, name: str = "aboba_warrior") -> None:
         super(Player, self).__init__(left, top, settings_path, move_speed=move_speed, hp=hp, type_="player", name=name)
         self.movement_input = movement_input
         self.attack_input = Attack_Input()

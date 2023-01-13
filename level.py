@@ -28,7 +28,8 @@ class Level:
         self.interact_objs = pygame.sprite.Group()
         self.interact_objs.add(Intaractable_Object(2592, 2496, pygame.K_e, 100, 1000, end_of_level_func, image = "data/graphics/interactavle_objects/tab.png"))
 
-        self.enemies.add(Enemy(500, 300, "data/enemies/aboba_warrior"))
+        self.enemies.add(Enemy(700, 400, "data/enemies/aboba_warrior"))
+
 
         self.layers = self.load_layers(path+"/layers.csv")
         self.obstacles = self.load_obstacles(path)
@@ -93,6 +94,7 @@ class Level:
                     self.player.gravity_move(i)
                     self.player.animator.return_to_main_status()
         else:
+            self.player.can_attack = False
             self.player.gravity_move(self.player.stats["gravity_strength"])
             if self.player.jump_count == 0:
                 if self.player.direction.x == -1:

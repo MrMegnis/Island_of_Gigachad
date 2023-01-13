@@ -28,11 +28,12 @@ class Health_Bar:
         self.update_bar()
 
     def update_bar(self):
-        percentage = self.current_hp / self.hp
-        size = self.bar_rect.size
-        new_size = (size[0] * percentage, size[1])
-        self.bar = pygame.surface.Surface(new_size)
-        self.bar.fill(self.bar_color)
+        if self.current_hp >= 0:
+            percentage = self.current_hp / self.hp
+            size = self.bar_rect.size
+            new_size = (size[0] * percentage, size[1])
+            self.bar = pygame.surface.Surface(new_size)
+            self.bar.fill(self.bar_color)
 
     def get_damage(self, damage):
         self.update_hp()
