@@ -68,11 +68,14 @@ class Player(Creature):
     def update_direction(self):
         self.direction = self.movement_input.get_input()
 
+    def update_direction(self):
+        self.direction = self.movement_input.get_input()
 
     def update(self, enemies, screen) -> None:
         self.hp = self.stats["hp"]
         self.move_speed = self.stats["move_speed"]
         # self.inventory.update(screen)
+        # self.update_direction()
         attack = self.attack_input.get_input()
 
         jump = self.jump_input.get_input()

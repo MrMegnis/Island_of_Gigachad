@@ -17,7 +17,7 @@ class Game:
         self.screen = pygame.display.set_mode((self.window_width, self.window_height))
         pygame.display.set_caption("Gigachad's Island")
         self.game = True
-        self.fps = 60
+        self.fps = 160
         self.clock = pygame.time.Clock()
         self.tile_size = 50
         self.player = Player(self.tile_size * 3, self.tile_size * 3, "data/characters/aboba_warrior", Movement_Input())
@@ -28,7 +28,7 @@ class Game:
 
     def run(self) -> None:
         while self.game:
-            print(self.clock.get_fps())
+            # print(self.clock.get_fps())
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.quit_game()

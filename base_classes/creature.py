@@ -7,7 +7,7 @@ from scripts.unpack_json import unpack_json
 
 class Creature(Rectangle):
     def __init__(self, left: int, top: int, settings_path: str, move_speed: int = 100, hp: int = 50, damage: int = 10,
-                 type_: str = None, name: str = None, gravity_strength: int = 10, jump_height: int = 28) -> None:
+                 type_: str = None, name: str = None, gravity_strength: int = 10, jump_height: int = 30) -> None:
         self.base_stats = {"hp": hp, "damage": damage, "gravity_strength": gravity_strength, "move_speed": move_speed,
                            "type": type_,
                            "jump_height": jump_height}

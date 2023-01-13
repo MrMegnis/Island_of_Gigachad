@@ -4,6 +4,7 @@ import pygame
 
 from base_classes.tiles import Tile
 from scripts.unpack_layer import unpack_layer
+from scripts.unpack_csv import unpack_csv
 from scripts.unpack_json import unpack_json
 
 
@@ -17,8 +18,14 @@ class Layer:
         self.layer = self.load_layer(layer_path, tile_path)
 
     def load_layer(self, layer_path, tiles_path, return_type: str = "surface"):
-        raw_layer = unpack_layer(layer_path)
+        # print(layer_path, tiles_path)
+        if layer_path.split(".")[-1] != "csv":
+            raw_layer = unpack_layer(layer_path)
+        else:
+            raw_layer = unpack_csv(layer_path, ";")
+        print(raw_layer)
         tiles_data = unpack_json(tiles_path)
+        print(tiles_data)
         self.tile_size = tiles_data["tile_size"]
         layer = pygame.sprite.Group()
         for row in range(len(raw_layer)):
