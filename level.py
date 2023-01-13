@@ -62,6 +62,7 @@ class Level:
         # return False
 
     def player_update(self, screen):
+        self.player.update_direction()
         if self.rect_collide(self.player.next_move(), self.obstacles.layer):
             self.player.lock_movement()
         else:
@@ -74,12 +75,14 @@ class Level:
                 self.player.jump_count = 1
             self.player.jump_count -= 1
 
-        if self.obstacles.collide_with(self.player.next_gravity_move()):
-            for i in range(self.player.gravity_strength, -1, -1):
-                if not self.obstacles.collide_with(self.player.next_gravity_move(i)):
+        collide_gravity = self.rect_collide(self.player.next_gravity_move(), self.obstacles.layer)
+        if collide_gravity:
+            for i in range(self.player.stats["gravity_strength"], -1, -1):
+                if not self.rect_collide(self.player.next_gravity_move(i), self.obstacles.layer):
                     self.player.gravity_move(i)
+                    self.player.animator.return_to_main_status()
         else:
-            self.player.gravity_move(self.player.gravity_strength)
+            self.player.gravity_move(self.player.stats["gravity_strength"])
             if self.player.jump_count == 0:
                 if self.player.direction.x == -1:
                     self.player.animator.trigger("fall_left")
