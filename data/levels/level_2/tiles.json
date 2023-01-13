@@ -1,0 +1,14 @@
+{
+  "tile_size" : 96,
+  "." : "",
+  "-1" : "",
+  "0" : "data/graphics/level/0.png",
+  "1" : "data/graphics/level/1.png",
+  "2" : "data/graphics/level/2.png",
+  "11" : "data/graphics/level/11.png",
+  "12" : "data/graphics/level/12.png",
+  "13" : "data/graphics/level/13.png",
+  "22" : "data/graphics/level/22.png",
+  "23" : "data/graphics/level/23.png",
+  "24" : "data/graphics/level/24.png"
+}

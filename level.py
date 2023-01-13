@@ -1,6 +1,7 @@
 import pygame
 from base_classes.layer import Layer
 from scripts.unpack_column import unpack_column
+from scripts.unpack_csv import unpack_csv
 from scripts.unpack_json import unpack_json
 from enemy import Enemy
 from player import Player
@@ -17,24 +18,30 @@ class Level:
         self.height = height
         self.left = left
         self.top = top
-        self.player = Player(300, 200, "data/characters/aboba_warrior", Movement_Input())
+        self.player = Player(300, 100, "data/characters/aboba_warrior", Movement_Input())
+        # self.player.rect.bottomleft = (96, 672)
         self.player.add_weapon(
             Weapon(self.player.hitbox.left, self.player.hitbox.top,
                    (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10,
                    self.player))
         self.enemies = pygame.sprite.Group()
         self.interact_objs = pygame.sprite.Group()
-        self.interact_objs.add(Intaractable_Object(800, 100, pygame.K_e, 100, 1000, end_of_level_func, image = "data/graphics/interactavle_objects/tab.png"))
+        self.interact_objs.add(Intaractable_Object(2592, 2496, pygame.K_e, 100, 1000, end_of_level_func, image = "data/graphics/interactavle_objects/tab.png"))
 
         self.enemies.add(Enemy(500, 300, "data/enemies/aboba_warrior"))
 
-        self.layers = self.load_layers(path)
+        self.layers = self.load_layers(path+"/layers.csv")
         self.obstacles = self.load_obstacles(path)
+        self.surface = pygame.Surface(pygame.display.get_window_size())
+        self.draw_on_surface(self.surface)
 
-    def load_layers(self, path):
+    def load_layers(self, layers_path):
         layers = []
-        tiles_path = path + "/tiles.json"
-        for layer_path in unpack_column(path + "/layers.txt"):
+        data = unpack_csv(layers_path, ";")
+        # print(data)
+        for i in data:
+            layer_path = i[0]
+            tiles_path = i[1]
             layers.append(Layer(self.width, self.height, layer_path, tiles_path, self.left, self.top))
         return layers
 
@@ -47,6 +54,10 @@ class Level:
     def draw(self, screen):
         for i in self.layers:
             i.draw(screen)
+
+    def draw_on_surface(self, surface):
+        for i in self.layers:
+            i.draw(surface)
 
     def rect_collide(self, rect, layer):
         r = pygame.sprite.Sprite()
@@ -62,6 +73,7 @@ class Level:
         # return False
 
     def player_update(self, screen):
+        self.player.update_direction()
         if self.rect_collide(self.player.next_move(), self.obstacles.layer):
             self.player.lock_movement()
         else:
@@ -89,8 +101,9 @@ class Level:
         self.player.update(self.enemies.sprites(), screen)
 
     def update(self, screen):
-        self.draw(screen)
+        # self.draw(screen)
+        screen.blit(self.surface, self.surface.get_rect(topleft=(0,0)))
+        # self.obstacles.draw(screen)
         self.enemies.update(screen)
         self.player_update(screen)
         self.interact_objs.update(self.player, screen)
-
