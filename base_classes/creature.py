@@ -20,7 +20,8 @@ class Creature(Rectangle):
         self.name = name
         self.can_move = True
         self.type_ = type_
-        self.animator = Animator(self, ["idle", "move_right", "move_left", "attack", "hit", "jump"])
+        self.animator = Animator(self, ["idle", "move_right", "move_left", "attack", "hit", "jump_right", "jump_left",
+                                        "fall_right", "fall_left"])
         image = self.animator.get_current_frame()
         super(Creature, self).__init__(left, top, image)
         self.hitbox = self.rect
@@ -39,8 +40,9 @@ class Creature(Rectangle):
         self.rect.top = self.top - hitbox_settings["top"]
 
     def move(self):
-        if self.animator.status != "jump":
-            if self.direction.x == 1 and self.stats["move_speed"] != 0:
+        if self.animator.status != "jump_right" and self.animator.status != "jump_left" and \
+                self.animator.status != "fall_left" and self.animator.status != "fall_right":
+            if self.direction.x == 1 and self.move_speed != 0:
                 self.animator.set_bool("move_right", True)
             elif self.direction.x == -1 and self.stats["move_speed"] != 0:
                 self.animator.set_bool("move_left", True)
@@ -102,6 +104,14 @@ class Creature(Rectangle):
     def do_jump(self):
         self.rect.y -= self.jump_count
         self.hitbox.y -= self.jump_count
+
+    def next_jump_move(self):
+        left = self.hitbox.left
+        top = self.hitbox.top
+        top -= self.jump_count - self.gravity_strength
+        rect = self.hitbox.copy()
+        rect.topleft = (left, top)
+        return rect
 
     def draw_hitbox(self):
         pygame.draw.rect(pygame.display.get_surface(), "green", self.hitbox, 5)
