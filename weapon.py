@@ -19,6 +19,9 @@ class Weapon(Rectangle):
                 hited.append(target)
         self.apply_damage(hited)
 
+    def change_damage(self, damage):
+        self.damage = damage
+
     def apply_damage(self, targets):
         for target in targets:
             target.get_damage(self.owner, self.damage)

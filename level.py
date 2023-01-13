@@ -48,17 +48,21 @@ class Level:
         for i in self.layers:
             i.draw(screen)
 
-    def player_collide(self, layer):
-        if layer.collide_with(self.player.hitbox):
-            return True
-        return False
+    def rect_collide(self, rect, layer):
+        r = pygame.sprite.Sprite()
+        r.rect = rect
+        return pygame.sprite.spritecollideany(r, layer)
 
-    def update(self, screen):
-        self.draw(screen)
-        self.enemies.update(screen)
-        self.enemies.draw(screen)
-        self.interact_objs.update(self.player, screen)
-        if self.obstacles.collide_with(self.player.next_move()):
+    def player_collide(self, layer):
+        r = pygame.sprite.Sprite()
+        r.rect = self.player.hitbox
+        return pygame.sprite.spritecollideany(r, layer)
+        # if layer.collide_with(self.player.hitbox):
+        #     return True
+        # return False
+
+    def player_update(self, screen):
+        if self.rect_collide(self.player.next_move(), self.obstacles.layer):
             self.player.lock_movement()
         else:
             self.player.unlock_movement()
@@ -83,11 +87,17 @@ class Level:
                     self.player.animator.trigger("fall_right")
             self.player.can_jump = False
 
-        if self.obstacles.collide_with(self.player.next_gravity_move(1)):
+        if self.rect_collide(self.player.next_gravity_move(1), self.obstacles.layer):
             if not self.player.can_jump:
                 self.player.animator.return_to_main_status()
             self.player.can_jump = True
         # Вот это я насрал
 
         self.player.update(self.enemies.sprites(), screen)
-        self.player.draw(screen)
+
+    def update(self, screen):
+        self.draw(screen)
+        self.enemies.update(screen)
+        self.player_update(screen)
+        self.interact_objs.update(self.player, screen)
+
