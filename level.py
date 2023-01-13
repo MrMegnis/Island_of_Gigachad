@@ -38,7 +38,7 @@ class Level:
     def load_layers(self, layers_path):
         layers = []
         data = unpack_csv(layers_path, ";")
-        # print(data)
+        print(data)
         for i in data:
             layer_path = i[0]
             tiles_path = i[1]

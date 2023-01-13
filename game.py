@@ -28,7 +28,7 @@ class Game:
 
     def run(self) -> None:
         while self.game:
-            print(self.clock.get_fps())
+            # print(self.clock.get_fps())
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.quit_game()
