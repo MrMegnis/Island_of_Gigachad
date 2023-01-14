@@ -6,18 +6,19 @@ from scripts.unpack_column import unpack_column
 from player import Player
 from input_system.movement_input import Movement_Input
 from main_menu import Main_Menu
+from camera import Camera
 
 
 class Game:
     def __init__(self) -> None:
         pygame.init()
         pygame.mixer.init()
-        self.window_width = 1000
-        self.window_height = 900
+        self.window_width = 1920
+        self.window_height = 1080
         self.screen = pygame.display.set_mode((self.window_width, self.window_height))
         pygame.display.set_caption("Gigachad's Island")
         self.game = True
-        self.fps = 60
+        self.fps = 100
         self.clock = pygame.time.Clock()
         self.tile_size = 50
         self.player = Player(self.tile_size * 3, self.tile_size * 3, "data/characters/aboba_warrior", Movement_Input())

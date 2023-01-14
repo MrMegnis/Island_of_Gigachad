@@ -42,5 +42,10 @@ class Layer:
                 return True
         return False
 
+    def apply_offset(self, camera, screen):
+        for sprite in self.layer:
+            camera.apply(sprite)
+            screen.blit(sprite.image, sprite.rect)
+
     def draw(self, screen):
         self.layer.draw(screen)
