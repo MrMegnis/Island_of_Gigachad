@@ -147,5 +147,6 @@ class Creature(Rectangle):
             self.unlock_movement()
         self.animator.next_frame()
         self.hb.update(screen)
+        self.draw_hitbox()
         self.draw(screen)
         self.draw_hitbox()
