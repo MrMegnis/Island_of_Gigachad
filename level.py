@@ -13,6 +13,12 @@ from weapon import Weapon
 from camera import Camera
 
 
+class Level_Surface(pygame.Surface):
+    def __init__(self, size):
+        super().__init__(size)
+        self.rect = self.get_rect()
+
+
 class Level:
     def __init__(self, width, height, player, path, end_of_level_func, left=0, top=0):
         # super(Level, self).__init__(width, height, path, cell_size, left, top, border)
@@ -36,17 +42,26 @@ class Level:
         self.layers = self.load_layers(path+"/layers.csv")
         self.prototype_obstacles = self.load_obstacles(path)
         self.obstacles = copy(self.prototype_obstacles)
-        self.surface = pygame.Surface(pygame.display.get_window_size())
+        # self.surface = pygame.Surface(pygame.display.get_window_size())
+        # self.surface_rect = self.surface.get_rect()
+        self.surface = Level_Surface((self.width, self.height))
         self.draw_on_surface(self.surface)
 
     def load_layers(self, layers_path):
         layers = []
         data = unpack_csv(layers_path, ";")
-        print(data)
+        # print(data)
         for i in data:
             layer_path = i[0]
             tiles_path = i[1]
-            layers.append(Layer(self.width, self.height, layer_path, tiles_path, self.left, self.top))
+            layer = Layer(self.width, self.height, layer_path, tiles_path, self.left, self.top)
+            layers.append(layer)
+            width = layer.bottomright[0]
+            height = layer.bottomright[1]
+            if width > self.width:
+                self.width = width
+            if height > self.height:
+                self.height = height
         return layers
 
     def load_obstacles(self, path):
@@ -55,9 +70,12 @@ class Level:
         obstacles = Layer(self.width, self.height, obstacles_path, tiles_path, self.left, self.top)
         return obstacles
 
-    def draw(self, screen):
+    def draw_layers(self, screen):
         for i in self.layers:
             i.draw(screen)
+
+    def draw(self, screen):
+        screen.blit(self.surface, self.surface.rect)
 
     def draw_on_surface(self, surface):
         for i in self.layers:
@@ -119,9 +137,10 @@ class Level:
         # self.obstacles.draw(screen)
         self.camera.update(self.player)
 
-        for layer in self.layers:
-            layer.apply_offset(self.camera, screen)
-
+        # for layer in self.layers:
+        #     layer.apply_offset(self.camera, screen)
+        self.draw(screen)
+        self.camera.apply(self.surface)
         self.camera.apply(self.player)
         for interactive_obj in self.interact_objs:
             self.camera.apply(interactive_obj)
@@ -131,3 +150,4 @@ class Level:
         self.enemies.update(screen)
         self.player_update(screen)
         self.interact_objs.update(self.player, screen)
+
