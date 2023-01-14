@@ -176,9 +176,9 @@ class Level:
 
     def update(self, screen):
         # self.obstacles.draw(screen)
-
+        self.camera_update()
         self.draw(screen)
         self.enemies.update(screen)
-        self.player_update(screen)
         self.interact_objs.update(self.player, screen)
-        self.camera_update()
+        self.player_update(screen)
+

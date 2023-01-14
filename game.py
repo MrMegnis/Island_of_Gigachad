@@ -13,10 +13,10 @@ class Game:
     def __init__(self) -> None:
         pygame.init()
         pygame.mixer.init()
-        # self.window_width = 1920
-        # self.window_height = 1080
-        self.window_width = 1000
-        self.window_height = 700
+        self.window_width = 1920
+        self.window_height = 1080
+        # self.window_width = 1000
+        # self.window_height = 700
         self.screen = pygame.display.set_mode((self.window_width, self.window_height))
         pygame.display.set_caption("Gigachad's Island")
         self.game = True
