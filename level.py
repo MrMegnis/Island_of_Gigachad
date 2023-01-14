@@ -14,8 +14,11 @@ from camera import Camera
 
 
 class Level_Surface(pygame.Surface):
-    def __init__(self, size):
-        super().__init__(size)
+    def __init__(self, size, transperent: bool = False):
+        if not transperent:
+            super().__init__(size)
+        else:
+            super().__init__(size, pygame.SRCALPHA)
         self.rect = self.get_rect()
 
 
@@ -35,17 +38,34 @@ class Level:
                    self.player))
         self.enemies = pygame.sprite.Group()
         self.interact_objs = pygame.sprite.Group()
-        self.interact_objs.add(Intaractable_Object(2592, 2496, pygame.K_e, 100, 1000, end_of_level_func, image = "data/graphics/interactavle_objects/tab.png"))
+        self.interact_objs.add(Intaractable_Object(2592, 2496, pygame.K_e, 100, 1000, end_of_level_func,
+                                                   image="data/graphics/interactavle_objects/tab.png"))
 
         self.enemies.add(Enemy(700, 400, "data/enemies/aboba_warrior"))
 
-        self.layers = self.load_layers(path+"/layers.csv")
+        self.layers = self.load_layers(path + "/layers.csv")
+
         self.prototype_obstacles = self.load_obstacles(path)
         self.obstacles = copy(self.prototype_obstacles)
-        # self.surface = pygame.Surface(pygame.display.get_window_size())
-        # self.surface_rect = self.surface.get_rect()
-        self.surface = Level_Surface((self.width, self.height))
-        self.draw_on_surface(self.surface)
+        self.obstacles_surface = Level_Surface((self.width, self.height), True)
+        self.draw_on_surface([self.obstacles], self.obstacles_surface)
+        self.obstacles_sprite = pygame.sprite.Sprite()
+        self.obstacles_sprite.image = self.obstacles_surface
+        self.obstacles_sprite.rect = self.obstacles_surface.get_rect(topleft=(self.left, self.top))
+        self.obstacles_sprite.mask = pygame.mask.from_surface(self.obstacles_sprite.image)
+
+
+        self.player_collider = pygame.sprite.Sprite()
+        surface = pygame.Surface(self.player.hitbox.size)
+        surface.fill("red")
+        self.player_collider.image = surface
+        self.player_collider.rect = surface.get_rect()
+        self.player_collider.mask = pygame.mask.from_surface(self.player_collider.image)
+
+
+        self.surface = Level_Surface((self.width, self.height), True)
+        self.surface_rect = self.surface.get_rect()
+        self.draw_on_surface(self.layers, self.surface)
 
     def load_layers(self, layers_path):
         layers = []
@@ -77,43 +97,52 @@ class Level:
     def draw(self, screen):
         screen.blit(self.surface, self.surface.rect)
 
-    def draw_on_surface(self, surface):
-        for i in self.layers:
+    def draw_on_surface(self, layers, surface):
+        for i in layers:
             i.draw(surface)
 
-    def rect_collide(self, rect, layer):
+    def rect_collide(self, rect, layer_group):
         r = pygame.sprite.Sprite()
         r.rect = rect
-        return pygame.sprite.spritecollideany(r, layer)
+        return pygame.sprite.spritecollideany(r, layer_group)
+
+    def rect_collide_mask(self, rect, layer_sprite):
+        r = pygame.sprite.Sprite()
+        surface = pygame.Surface(rect.size)
+        surface.fill("red")
+        r.image = surface
+        r.rect = surface.get_rect(topleft=rect.topleft)
+        r.mask = pygame.mask.from_surface(r.image)
+        return bool(pygame.sprite.collide_mask(r, layer_sprite))
 
     def player_collide(self, layer):
-        r = pygame.sprite.Sprite()
-        r.rect = self.player.hitbox
-        return pygame.sprite.spritecollideany(r, layer)
-        # if layer.collide_with(self.player.hitbox):
-        #     return True
-        # return False
+        return pygame.sprite.spritecollideany(self.player_collider, layer)
+
+    def player_collide_mask(self, layer_sprite):
+        return not pygame.sprite.collide_mask(self.player_collider, layer_sprite)
 
     def player_update(self, screen):
+        collide_func = self.rect_collide_mask
+        obstacles = self.obstacles_sprite
         self.player.update_direction()
-        if self.rect_collide(self.player.next_move(), self.obstacles.layer):
+
+        if collide_func(self.player.next_move(), obstacles):
             self.player.lock_movement()
         else:
             self.player.unlock_movement()
 
         if self.player.jump_count != 0:
-            if not self.obstacles.collide_with(self.player.next_jump_move()):
+            if not collide_func(self.player.next_jump_move(), obstacles):
                 self.player.do_jump()
             else:
                 self.player.jump_count = 1
             self.player.jump_count -= 1
 
-        collide_gravity = self.rect_collide(self.player.next_gravity_move(), self.obstacles.layer)
-        if collide_gravity:
+        if collide_func(self.player.next_gravity_move(), obstacles):
             for i in range(self.player.stats["gravity_strength"], -1, -1):
-                if not self.rect_collide(self.player.next_gravity_move(i), self.obstacles.layer):
+                if not collide_func(self.player.next_gravity_move(i), obstacles):
                     self.player.gravity_move(i)
-                    self.player.animator.return_to_main_status()
+                    # self.player.animator.return_to_main_status()
         else:
             self.player.can_attack = False
             self.player.gravity_move(self.player.stats["gravity_strength"])
@@ -124,7 +153,7 @@ class Level:
                     self.player.animator.trigger("fall_right")
             self.player.can_jump = False
 
-        if self.rect_collide(self.player.next_gravity_move(1), self.obstacles.layer):
+        if collide_func(self.player.next_gravity_move(1), obstacles):
             if not self.player.can_jump:
                 self.player.animator.return_to_main_status()
             self.player.can_jump = True
@@ -132,22 +161,24 @@ class Level:
 
         self.player.update(self.enemies.sprites(), screen)
 
-    def update(self, screen):
-        # self.draw(screen)
-        # self.obstacles.draw(screen)
+    def camera_update(self):
         self.camera.update(self.player)
-
-        # for layer in self.layers:
-        #     layer.apply_offset(self.camera, screen)
-        self.draw(screen)
         self.camera.apply(self.surface)
-        self.camera.apply(self.player)
+        self.camera.apply(self.obstacles_sprite)
+        # self.camera.apply(self.obstacles_surface)
+        self.camera.apply_creature(self.player)
+        # for obstacle in self.obstacles.layer:
+        #     self.camera.apply(obstacle)
         for interactive_obj in self.interact_objs:
             self.camera.apply(interactive_obj)
         for enemy in self.enemies:
-            self.camera.apply(enemy)
+            self.camera.apply_creature(enemy)
 
+    def update(self, screen):
+        # self.obstacles.draw(screen)
+
+        self.draw(screen)
         self.enemies.update(screen)
         self.player_update(screen)
         self.interact_objs.update(self.player, screen)
-
+        self.camera_update()

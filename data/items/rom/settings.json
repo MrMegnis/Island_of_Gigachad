@@ -1,6 +1,6 @@
 {
-  "stat" : "hp",
-  "afix" : "add",
-  "value" : 100,
+  "stat" : ["hp", "damage"],
+  "afix" : ["decrease_percentage", "add_percentage"],
+  "value" : [30, 60],
   "image" : ""
 }

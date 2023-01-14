@@ -1,0 +1,6 @@
+{
+  "stat" : ["hp", "damage"],
+  "afix" : ["add_percentage", "add_percentage"],
+  "value" : [10, 10],
+  "image" : ""
+}

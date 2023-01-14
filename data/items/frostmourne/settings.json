@@ -1,0 +1,6 @@
+{
+  "stat" : ["damage", "move_speed"],
+  "afix" : ["add_percentage", "decrease_percentage"],
+  "value" : [100, 50],
+  "image" : ""
+}
