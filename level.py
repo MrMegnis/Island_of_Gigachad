@@ -1,4 +1,5 @@
 import pygame
+from copy import copy
 from base_classes.layer import Layer
 from scripts.unpack_column import unpack_column
 from scripts.unpack_csv import unpack_csv
@@ -9,6 +10,7 @@ from input_system.movement_input import Movement_Input
 from interactable_object import Intaractable_Object
 from animator import Animator
 from weapon import Weapon
+from camera import Camera
 
 
 class Level:
@@ -18,7 +20,8 @@ class Level:
         self.height = height
         self.left = left
         self.top = top
-        self.player = Player(300, 100, "data/characters/aboba_warrior", Movement_Input())
+        self.player = Player(250, 100, "data/characters/aboba_warrior", Movement_Input())
+        self.camera = Camera(self.player.left, self.player.top)
         # self.player.rect.bottomleft = (96, 672)
         self.player.add_weapon(
             Weapon(self.player.hitbox.left, self.player.hitbox.top,
@@ -30,9 +33,9 @@ class Level:
 
         self.enemies.add(Enemy(700, 400, "data/enemies/aboba_warrior"))
 
-
         self.layers = self.load_layers(path+"/layers.csv")
-        self.obstacles = self.load_obstacles(path)
+        self.prototype_obstacles = self.load_obstacles(path)
+        self.obstacles = copy(self.prototype_obstacles)
         self.surface = pygame.Surface(pygame.display.get_window_size())
         self.draw_on_surface(self.surface)
 
@@ -113,8 +116,18 @@ class Level:
 
     def update(self, screen):
         # self.draw(screen)
-        screen.blit(self.surface, self.surface.get_rect(topleft=(0,0)))
         # self.obstacles.draw(screen)
+        self.camera.update(self.player)
+
+        for layer in self.layers:
+            layer.apply_offset(self.camera, screen)
+
+        self.camera.apply(self.player)
+        for interactive_obj in self.interact_objs:
+            self.camera.apply(interactive_obj)
+        for enemy in self.enemies:
+            self.camera.apply(enemy)
+
         self.enemies.update(screen)
         self.player_update(screen)
         self.interact_objs.update(self.player, screen)
