@@ -15,14 +15,34 @@ class Item(Rectangle):
         super(Item, self).__init__(left, top, image)
 
     def apply_afix(self):
-        if self.afix == "add":
-            self.owner.stats[self.stat] += self.value
-        elif self.afix == "multiply":
-            self.owner.stats[self.stat] *= self.value
-        elif self.afix == "decrease":
-            self.owner.stats[self.stat] -= self.value
-        elif self.afix == "divide":
-            self.owner.stats[self.stat] = self.owner.stats[self.stat] // self.value
+        for i in range(len(self.afix)):
+            if self.afix[i] == "add":
+                value = self.owner.stats[self.stat[i]]
+                value += self.value[i]
+                self.owner.change_stat(self.stat[i], value)
+
+            elif self.afix[i] == "multiply":
+                value = self.owner.stats[self.stat[i]]
+                self.owner.stats[self.stat[i]] *= self.value[i]
+                self.owner.change_stat(self.stat[i], value)
+            elif self.afix[i] == "decrease":
+                value = self.owner.stats[self.stat[i]]
+                value -= self.value[i]
+                self.owner.change_stat(self.stat[i], value)
+            elif self.afix[i] == "divide":
+                value = self.owner.stats[self.stat[i]]
+                value = self.owner.stats[self.stat[i]] // self.value[i]
+                self.owner.change_stat(self.stat[i], value)
+            elif self.afix[i] == "add_percentage":
+                value = self.owner.stats[self.stat[i]]
+                value *= (1 + self.value[i] / 100)
+                value = int(value)
+                self.owner.change_stat(self.stat[i], value)
+            elif self.afix[i] == "decrease_percentage":
+                value = self.owner.stats[self.stat[i]]
+                value *= (1 - self.value[i] / 100)
+                value = int(value)
+                self.owner.change_stat(self.stat[i], value)
 
     def load_settings(self, path):
         settings = unpack_json(path)

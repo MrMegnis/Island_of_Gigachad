@@ -3,10 +3,12 @@ from base_classes.rectangle import Rectangle
 from animator import Animator
 from gui.widgets.health_bar import Health_Bar
 from scripts.unpack_json import unpack_json
+from weapon import Weapon
 
 
 class Creature(Rectangle):
-    def __init__(self, left: int, top: int, settings_path: str, move_speed: int = 300, hp: int = 50, damage: int = 10,
+    def __init__(self, left: int, top: int, settings_path: str, weapon: Weapon = None, move_speed: int = 300,
+                 hp: int = 50, damage: int = 10,
                  type_: str = None, name: str = None, gravity_strength: int = 10, jump_height: int = 30) -> None:
         self.base_stats = {"hp": hp, "damage": damage, "gravity_strength": gravity_strength, "move_speed": move_speed,
                            "type": type_,
@@ -15,6 +17,10 @@ class Creature(Rectangle):
         # self.current_stats = self.base_stats.copy()
         self.current_hp = self.stats["hp"]
         # надо убрать все переменные-характеристики игрока
+        if isinstance(weapon, type(None)):
+            self.weapon = Weapon(0, 0, (0, 0), 0, self)
+        else:
+            self.weapon = weapon
 
         self.direction = pygame.Vector2(0, 0)
         self.name = name
@@ -29,6 +35,21 @@ class Creature(Rectangle):
         self.jump_count = 0
         self.hb = Health_Bar(self.hitbox.left, self.hitbox.bottom, (self.hitbox.size[0], self.hitbox.size[1] // 10),
                              self)
+
+    def change_stat(self, stat, value):
+        if stat == "hp":
+            self.stats[stat] = value
+            self.current_hp = self.stats[stat] - (self.stats[stat] - self.current_hp)
+        elif stat == "damage":
+            self.stats[stat] = value
+        else:
+            self.stats[stat] = value
+
+    def add_weapon(self, weapon: Weapon):
+        self.weapon = weapon
+
+    def update_weapon_damage(self):
+        self.weapon.change_damage(self.stats["damage"])
 
     def load_settings(self, path):
         settings = unpack_json(path + "/settings.json")
@@ -127,3 +148,4 @@ class Creature(Rectangle):
         self.animator.next_frame()
         self.hb.update(screen)
         self.draw(screen)
+        self.draw_hitbox()

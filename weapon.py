@@ -7,6 +7,8 @@ class Weapon(Rectangle):
         super(Weapon, self).__init__(left, top, size=size)
         self.damage = damage
         self.owner = owner
+        owner_damage = self.owner.stats["damage"]
+        # self.owner.change_stat("damage", owner_damage + self.damage)
 
     def move(self, x, y):
         self.rect.x += x
@@ -24,7 +26,7 @@ class Weapon(Rectangle):
 
     def apply_damage(self, targets):
         for target in targets:
-            target.get_damage(self.owner, self.damage)
+            target.get_damage(self.owner, self.owner.stats["damage"] + self.damage)
 
     def draw_weapon_range(self):
         pygame.draw.rect(pygame.display.get_surface(), "yellow", self.rect)
