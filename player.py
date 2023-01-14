@@ -69,12 +69,11 @@ class Player(Creature):
     def update(self, enemies, screen) -> None:
         self.hp = self.stats["hp"]
         self.move_speed = self.stats["move_speed"]
-        # self.inventory.update(screen)
         # self.update_direction()
         attack = self.attack_input.get_input()
         jump = self.jump_input.get_input()
         self.try_attack(attack, enemies)
         self.try_jump(jump)
-
         # self.weapon.draw_weapon_range()
         super(Player, self).update(screen)
+        self.inventory.update(screen)
