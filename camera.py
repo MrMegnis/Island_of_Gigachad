@@ -28,6 +28,15 @@ class Camera:
         rect.x += self.dx
         rect.y += self.dy
 
-    def update(self, target):
-        self.dx = -(target.rect.x + target.rect.w // 2 - self.window_width // 2)
-        self.dy = -(target.rect.y + target.rect.h // 2 - self.window_height // 2)
+    def update(self, target, win_width, win_height, surface):
+        left = -(target.rect.x + target.rect.w // 2 - self.window_width // 2)
+        top = -(target.rect.y + target.rect.h // 2 - self.window_height // 2)
+        print(surface.rect.x, surface.rect.y)
+        if surface.rect.x + left > 0:
+            left = 0
+        if surface.rect.x + left < -1880:
+            left = 0
+        if surface.rect.y + top > 0 or surface.rect.y + top < -2175:
+            top = 0
+        self.dx = left
+        self.dy = top

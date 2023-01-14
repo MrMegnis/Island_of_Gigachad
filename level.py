@@ -162,7 +162,7 @@ class Level:
         self.player.update(self.enemies.sprites(), screen)
 
     def camera_update(self):
-        self.camera.update(self.player)
+        self.camera.update(self.player, self.width, self.height, self.surface)
         self.camera.apply(self.surface)
         self.camera.apply(self.obstacles_sprite)
         # self.camera.apply(self.obstacles_surface)
