@@ -28,15 +28,15 @@ class Camera:
         rect.x += self.dx
         rect.y += self.dy
 
-    def update(self, target, win_width, win_height, surface):
+    def update(self, target, level_width, level_height, surface):
+        window_size = pygame.display.get_window_size()
         left = -(target.rect.x + target.rect.w // 2 - self.window_width // 2)
         top = -(target.rect.y + target.rect.h // 2 - self.window_height // 2)
-        print(surface.rect.x, surface.rect.y)
         if surface.rect.x + left > 0:
             left = 0
-        if surface.rect.x + left < -1880:
+        if surface.rect.x + left < -(level_width - window_size[0]):
             left = 0
-        if surface.rect.y + top > 0 or surface.rect.y + top < -2175:
+        if surface.rect.y + top > 0 or surface.rect.y + top < -(level_height - window_size[1]):
             top = 0
         self.dx = left
         self.dy = top
