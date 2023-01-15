@@ -7,8 +7,8 @@ from weapon import Weapon
 
 
 class Creature(Rectangle):
-    def __init__(self, left: int, top: int, settings_path: str, weapon: Weapon = None, move_speed: int = 300,
-                 hp: int = 50, damage: int = 10,
+    def __init__(self, left: int, top: int, settings_path: str, on_death_func, weapon: Weapon = None, move_speed: int = 300,
+                 hp: int = 50, damage: int = 10, attack_interval: int = 500,
                  type_: str = None, name: str = None, gravity_strength: int = 10, jump_height: int = 30) -> None:
         self.base_stats = {"hp": hp, "damage": damage, "gravity_strength": gravity_strength, "move_speed": move_speed,
                            "type": type_,
@@ -16,23 +16,30 @@ class Creature(Rectangle):
         self.stats = self.base_stats.copy()
         # self.current_stats = self.base_stats.copy()
         self.current_hp = self.stats["hp"]
-        # надо убрать все переменные-характеристики игрока
         if isinstance(weapon, type(None)):
             self.weapon = Weapon(0, 0, (0, 0), 0, self)
         else:
             self.weapon = weapon
 
         self.direction = pygame.Vector2(0, 0)
+        self.view = "right"
         self.name = name
+        self.on_death_func = on_death_func
         self.can_move = True
         self.type_ = type_
-        self.animator = Animator(self, ["idle", "move_right", "move_left", "attack", "hit", "jump_right", "jump_left",
-                                        "fall_right", "fall_left"])
+        self.animator = Animator(self,
+                                 ["idle_right", "idle_left", "move_right", "move_left", "attack_right", "attack_left",
+                                  "hit_right", "hit_left", "jump_right", "jump_left", "fall_right", "fall_left"])
         image = self.animator.get_current_frame()
         super(Creature, self).__init__(left, top, image)
         self.hitbox = self.rect
         self.load_settings(settings_path)
         self.jump_count = 0
+        self.can_attack = True
+        self.can_jump = True
+        self.can_apply_damage = True
+        self.attack_interval = attack_interval
+        self.last_attack_time = 0
         self.hb = Health_Bar(self.hitbox.left, self.hitbox.bottom, (self.hitbox.size[0], self.hitbox.size[1] // 10),
                              self)
 
@@ -61,15 +68,13 @@ class Creature(Rectangle):
         self.rect.top = self.top - hitbox_settings["top"]
 
     def move(self):
-        if self.animator.status != "jump_right" and self.animator.status != "jump_left" and \
-                self.animator.status != "fall_left" and self.animator.status != "fall_right":
-            if self.direction.x == 1 and self.stats["move_speed"] != 0:
-                self.animator.set_bool("move_right", True)
-            elif self.direction.x == -1 and self.stats["move_speed"] != 0:
-                self.animator.set_bool("move_left", True)
+        if "jump" not in self.animator.status and "fall" not in self.animator.status:
+            if self.direction.x != 0 and self.stats["move_speed"] != 0:
+                self.animator.set_bool("move_" + self.view, True)
             else:
                 self.animator.set_bool("move_right", False)
                 self.animator.set_bool("move_left", False)
+                # self.animator.return_to_main_status()
         # print(int(self.direction.x), self.move_speed, int(self.direction.x) * self.move_speed / 60)
         x = int(self.direction.x * self.stats["move_speed"] / 60)
         y = int(self.direction.y * self.stats["move_speed"] / 60)
@@ -84,6 +89,12 @@ class Creature(Rectangle):
 
     def unlock_movement(self):
         self.can_move = True
+
+    def lock_attack(self):
+        self.can_attack = False
+
+    def unlock_attack(self):
+        self.can_attack = True
 
     def next_move(self):
         left = self.hitbox.left
@@ -108,20 +119,6 @@ class Creature(Rectangle):
         self.rect.y += y
         self.hitbox.y += y
 
-    def get_damage(self, attaker, damage):
-        self.current_hp -= damage
-        self.hb.get_damage(damage)
-        if self.current_hp <= 0:
-            self.kill()
-        else:
-            self.get_hit(attaker)
-
-    def get_hit(self, attacker):
-        self.animator.trigger("hit")
-
-    def make_attack(self):
-        self.animator.trigger("attack")
-
     def do_jump(self):
         self.rect.y -= self.jump_count
         self.hitbox.y -= self.jump_count
@@ -134,19 +131,71 @@ class Creature(Rectangle):
         rect.topleft = (left, top)
         return rect
 
+    def get_hit(self, attacker):
+        self.animator.trigger("hit_" + self.view)
+        self.animator.add_funcs_on_last_frame([self.unlock_movement, self.unlock_attack])
+
+    def get_damage(self, attaker, damage):
+        self.lock_attack()
+        self.lock_movement()
+        self.current_hp -= damage
+        self.hb.get_damage(damage)
+        self.get_hit(attaker)
+        if self.current_hp <= 0:
+            self.death()
+
+    def death(self):
+        self.on_death_func()
+        self.kill()
+
+    def try_attack(self, *args, **kwargs):
+        pass
+
+    def attack(self):
+        self.make_attack()
+        self.lock_movement()
+        self.lock_attack()
+        self.animator.add_funcs_on_last_frame([self.unlock_movement, self.unlock_attack])
+
+    def make_attack(self):
+        self.animator.trigger("attack_" + self.view)
+
+    def apply_damage(self, enemies):
+        if self.can_apply_damage:
+            self.weapon.hit(enemies)
+        self.can_apply_damage = False
+
+    def normalize_weapon(self):
+        if self.view == "right":
+            self.weapon.rect.topleft = self.hitbox.topleft
+        else:
+            self.weapon.rect.topright = self.hitbox.topright
+
     def draw_hitbox(self):
         pygame.draw.rect(pygame.display.get_surface(), "green", self.hitbox, 5)
-        pygame.draw.rect(pygame.display.get_surface(), "red", self.rect, 5)
+        # pygame.draw.rect(pygame.display.get_surface(), "red", self.rect, 5)
 
-    def update(self, screen) -> None:
+    def update_direction(self, *args, **kwargs):
+        self.update_view()
+
+    def update_view(self):
+        if self.direction.x == -1:
+            self.view = "left"
+            self.animator.set_main_status("idle_left")
+        elif self.direction.x == 1:
+            self.view = "right"
+            self.animator.set_main_status("idle_right")
+
+    def update(self, *args, **kwargs) -> None:
+        """screen should be last parameter in args"""
+        if "screen" in kwargs.keys():
+            screen = kwargs["screen"]
+        else:
+            screen = args[-1]
         if self.can_move:
             self.move()
-        if self.animator.get_status() == "attack":
-            self.lock_movement()
-        else:
-            self.unlock_movement()
         self.animator.next_frame()
         self.hb.update(screen)
         self.draw_hitbox()
         self.draw(screen)
-        self.draw_hitbox()
+        # self.weapon.draw_weapon_range()

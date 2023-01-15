@@ -29,19 +29,23 @@ class Level:
         self.height = height
         self.left = left
         self.top = top
-        self.player = Player(250, 100, "data/characters/aboba_warrior", Movement_Input())
+        self.killed_enemies = 0
+        self.player = Player(250, 100, "data/characters/aboba_warrior", end_of_level_func, Movement_Input())
         self.camera = Camera(self.player.left, self.player.top)
         # self.player.rect.bottomleft = (96, 672)
-        self.player.add_weapon(
-            Weapon(self.player.hitbox.left, self.player.hitbox.top,
+        weapon =  Weapon(self.player.hitbox.left, self.player.hitbox.top,
                    (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10,
-                   self.player))
+                   self.player)
+        self.player.add_weapon(weapon)
         self.enemies = pygame.sprite.Group()
         self.interact_objs = pygame.sprite.Group()
         self.interact_objs.add(Intaractable_Object(2592, 2496, pygame.K_e, 100, 1000, end_of_level_func,
                                                    image="data/graphics/interactavle_objects/tab.png"))
-
-        self.enemies.add(Enemy(700, 400, "data/enemies/aboba_warrior"))
+        enemy = Enemy(700, 400, "data/enemies/aboba_warrior", self.enemy_death)
+        weapon_enemy =  Weapon(self.player.hitbox.left, self.player.hitbox.top,
+                   (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10, enemy)
+        enemy.add_weapon(weapon_enemy)
+        self.enemies.add(enemy)
 
         self.layers = self.load_layers(path + "/layers.csv")
 
@@ -66,6 +70,9 @@ class Level:
         self.surface = Level_Surface((self.width, self.height), True)
         self.surface_rect = self.surface.get_rect()
         self.draw_on_surface(self.layers, self.surface)
+
+    def enemy_death(self):
+        self.killed_enemies += 1
 
     def load_layers(self, layers_path):
         layers = []
@@ -125,11 +132,13 @@ class Level:
         collide_func = self.rect_collide_mask
         obstacles = self.obstacles_sprite
         self.player.update_direction()
+        # self.player.update_view()
 
         if collide_func(self.player.next_move(), obstacles):
             self.player.lock_movement()
         else:
-            self.player.unlock_movement()
+            if "hit" not in self.player.animator.get_status():
+                self.player.unlock_movement()
 
         if self.player.jump_count != 0:
             if not collide_func(self.player.next_jump_move(), obstacles):
@@ -142,23 +151,27 @@ class Level:
             for i in range(self.player.stats["gravity_strength"], -1, -1):
                 if not collide_func(self.player.next_gravity_move(i), obstacles):
                     self.player.gravity_move(i)
+                    self.player.update_view()
+                    if self.player.animator.status != "jump_" + self.player.view:
+                        self.player.animator.set_bool("jump_" + self.player.view, True)
                     # self.player.animator.return_to_main_status()
         else:
-            self.player.can_attack = False
+            self.player.lock_attack()
             self.player.gravity_move(self.player.stats["gravity_strength"])
-            if self.player.jump_count == 0:
-                if self.player.direction.x == -1:
-                    self.player.animator.trigger("fall_left")
-                else:
-                    self.player.animator.trigger("fall_right")
+            if "jump" in self.player.animator.status and "jump_" + self.player.view != self.player.animator.get_status():
+                self.player.animator.set_bool("jump_" + self.player.view, True)
+            # print(self.player.animator.status)
+            if self.player.jump_count == 0 and "fall_" + self.player.view != self.player.animator.get_status():
+                self.player.animator.set_bool("fall_" + self.player.view, True)
             self.player.can_jump = False
 
         if collide_func(self.player.next_gravity_move(1), obstacles):
             if not self.player.can_jump:
                 self.player.animator.return_to_main_status()
             self.player.can_jump = True
+            self.player.unlock_attack()
         # Вот это я насрал
-
+        # print(self.player.animator.status)
         self.player.update(self.enemies.sprites(), screen)
 
     def camera_update(self):
@@ -178,7 +191,7 @@ class Level:
         # self.obstacles.draw(screen)
         self.camera_update()
         self.draw(screen)
-        self.enemies.update(screen)
+        self.enemies.update(self.player, screen)
         self.interact_objs.update(self.player, screen)
         self.player_update(screen)
 

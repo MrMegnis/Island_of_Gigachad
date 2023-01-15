@@ -5,7 +5,7 @@ from scripts.unpack_json import unpack_json
 
 
 class Animator:
-    def __init__(self, obj, animations: list, main_status: str = "idle"):
+    def __init__(self, obj, animations: list, main_status: str = "idle_right"):
         self.object = obj
         self.animation = dict()
         self.booleans = dict()
@@ -14,16 +14,12 @@ class Animator:
         for i in animations:
             self.booleans[i] = False
             self.triggers[i] = False
-
-            if i != "hit":
-                self.animation[i] = self.load_animation(
-                    f"data/graphics/{self.object.type_}/{self.object.name}/{i}/{i}_animation.csv",
-                    f"data/graphics/{self.object.type_}/{self.object.name}/{i}/{i}.png")
+            self.animation[i] = self.load_animation(
+                f"data/graphics/{self.object.type_}/{self.object.name}/{i}/{i}_animation.csv",
+                f"data/graphics/{self.object.type_}/{self.object.name}/{i}/{i}.png")
+            if "hit" not in i:
                 self.can_interrupt[i] = True
             else:
-                self.animation[i] = self.load_animation(
-                    f"data/graphics/{self.object.type_}/{self.object.name}/{i}/{i}_animation.csv",
-                    f"data/graphics/{self.object.type_}/{self.object.name}/{i}/{i}.png")
                 self.can_interrupt[i] = False
 
         self.main_status = main_status
@@ -33,23 +29,42 @@ class Animator:
         self.frame_duration = 500
         self.current_time = 0
         self.frame_change_time = pygame.time.get_ticks()
+        self.funcs_on_last_frame = []
+
+    def set_funcs_on_last_frame(self, funcs: list):
+        self.funcs_on_last_frame = funcs
+
+    def set_func_on_last_frame(self, func):
+        self.funcs_on_last_frame = [func]
+
+    def add_funcs_on_last_frame(self, funcs: list):
+        self.funcs_on_last_frame += funcs
+
+    def add_func_on_last_frame(self, func):
+        self.funcs_on_last_frame += [func]
+
+    def clear_booleans_and_triggers(self):
+        for i in self.animation.keys():
+            self.triggers[i] = False
+            self.booleans[i] = False
 
     def set_bool(self, status, value):
-        if value:
-            for i in self.booleans.keys():
-                self.booleans[i] = False
-            self.booleans[status] = value
-            self.set_status(status)
-        else:
-            self.booleans[status] = value
+        if (self.can_interrupt[self.status]) or not(self.booleans[self.status] or self.triggers[self.status]):
+            if value:
+                self.clear_booleans_and_triggers()
+                self.booleans[status] = value
+                self.set_status(status)
+            else:
+                self.booleans[status] = value
 
     def trigger(self, status):
-        for i in self.triggers.keys():
-            self.triggers[i] = False
-        self.triggers[status] = True
-        self.set_status(status)
+        if (self.can_interrupt[self.status]) or not(self.booleans[self.status] or self.triggers[self.status]):
+            self.clear_booleans_and_triggers()
+            self.triggers[status] = True
+            self.set_status(status)
 
     def return_to_main_status(self):
+        self.clear_booleans_and_triggers()
         self.set_bool(self.main_status, True)
 
     def next_frame(self):
@@ -62,11 +77,16 @@ class Animator:
             self.frame_index = (self.frame_index + 1)
             self.frame_change_time = time_now
 
+        # print(self.triggers[self.status], len(self.animation[self.status]), self.status)
+        if self.frame_index == len(self.animation[self.status]):
+            pass
         if self.triggers[self.status] and self.frame_index == len(self.animation[self.status]):
-            tmp = self.can_interrupt[self.status] = True
+            for func in self.funcs_on_last_frame:
+                # if self.object.stats["move_speed"] == 500:
+                    # print(func, self.status, self.frame_index, len(self.animation[self.status]))
+                func()
+            self.funcs_on_last_frame = []
             self.return_to_main_status()
-            self.triggers[self.status] = False
-            self.can_interrupt[self.status] = tmp
         if not (self.booleans[self.status]) and not self.triggers[self.status]:
             self.return_to_main_status()
         self.frame_index = self.frame_index % len(self.animation[self.status])
@@ -75,10 +95,11 @@ class Animator:
         self.main_status = status
 
     def set_status(self, status):
-        if self.status != status and self.can_interrupt[self.status]:
+        if (self.status != status and self.can_interrupt[self.status]) or not(self.booleans[self.status] or self.triggers[self.status]):
             self.frame_index = 0
             self.current_time = 0
             self.status = status
+            self.funcs_on_last_frame = []
 
     def set_frame_duration(self, duration):
         self.frame_duration = duration

@@ -10,6 +10,9 @@ class Weapon(Rectangle):
         owner_damage = self.owner.stats["damage"]
         # self.owner.change_stat("damage", owner_damage + self.damage)
 
+    def set_owner(self, owner):
+        self.owner = owner
+
     def move(self, x, y):
         self.rect.x += x
         self.rect.y += y
