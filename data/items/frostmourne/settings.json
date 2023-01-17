@@ -1,6 +1,8 @@
 {
+  "name" : "frostmourne",
+  "image_path" : "data/graphics/item/frostmourne.png",
+  "icon_path" : "data/graphics/item/frostmourne_icon.png",
   "stat" : ["damage", "move_speed"],
   "afix" : ["add_percentage", "decrease_percentage"],
-  "value" : [100, 50],
-  "image" : ""
+  "value" : [100, 50]
 }

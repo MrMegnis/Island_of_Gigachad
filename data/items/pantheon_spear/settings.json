@@ -1,6 +1,8 @@
 {
+  "name" : "pantheon_spear",
+  "image_path" : "data/graphics/item/pantheon_spear.png",
+  "icon_path" : "data/graphics/item/pantheon_spear_icon.png",
   "stat" : ["damage"],
   "afix" : ["add_percentage"],
-  "value" : [30],
-  "image" : ""
+  "value" : [30]
 }

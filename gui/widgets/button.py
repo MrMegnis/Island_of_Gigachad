@@ -3,16 +3,22 @@ from base_classes.rectangle import Rectangle
 
 
 class Button(Rectangle):
-    def __init__(self, left: int, top: int, func=None, image: str = None, size: tuple = None, color: str = "black"):
+    def __init__(self, left: int, top: int, func=None, argument=None, args:list=None, kwargs:dict=None, image: str = None, size: tuple = None, color: str = "black"):
         super(Button, self).__init__(left, top, image, size, color)
         if isinstance(func, type(None)):
             self.func = lambda: print("click")
         else:
             self.func = func
+            self.argument = argument
+            self.args = list()
+            self.kwargs = dict()
         self.can_click = True
 
     def on_click(self):
-        self.func()
+        if not isinstance(self.argument, type(None)):
+            self.func(self.argument)
+        else:
+            self.func(*self.args, **self.kwargs)
 
     def get_click(self):
         pressed = pygame.mouse.get_pressed()

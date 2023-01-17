@@ -1,4 +1,5 @@
 import pygame
+import random
 from copy import copy
 from base_classes.layer import Layer
 from scripts.unpack_column import unpack_column
@@ -23,14 +24,14 @@ class Level_Surface(pygame.Surface):
 
 
 class Level:
-    def __init__(self, width, height, player, path, end_of_level_func, left=0, top=0):
+    def __init__(self, width, height, player, path, end_of_level_func, end_of_game_func, left=0, top=0):
         # super(Level, self).__init__(width, height, path, cell_size, left, top, border)
         self.width = width
         self.height = height
         self.left = left
         self.top = top
         self.killed_enemies = 0
-        self.player = Player(250, 100, "data/characters/aboba_warrior", end_of_level_func, Movement_Input())
+        self.player = Player(250, 100, "data/characters/aboba_warrior", end_of_game_func, Movement_Input())
         self.camera = Camera(self.player.left, self.player.top)
         # self.player.rect.bottomleft = (96, 672)
         weapon =  Weapon(self.player.hitbox.left, self.player.hitbox.top,
@@ -71,8 +72,19 @@ class Level:
         self.surface_rect = self.surface.get_rect()
         self.draw_on_surface(self.layers, self.surface)
 
+        self.items_path = [
+            "data/items/frostmourne/settings.json",
+            "data/items/pantheon_helmet/settings.json",
+            "data/items/pantheon_spear/settings.json",
+            "data/items/pantheon_shield/settings.json",
+            "data/items/rom/settings.json"
+        ]
+
     def enemy_death(self):
         self.killed_enemies += 1
+        item = random.choice(self.items_path)
+        self.player.inventory.add_item(item)
+        print(item)
 
     def load_layers(self, layers_path):
         layers = []

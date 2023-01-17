@@ -1,6 +1,8 @@
 {
+  "name" : "pantheon_helmet",
+  "image_path" : "data/graphics/item/pantheon_helmet.png",
+  "icon_path" : "data/graphics/item/pantheon_helmet_icon.png",
   "stat" : ["hp"],
   "afix" : ["add_percentage"],
-  "value" : [25],
-  "image" : ""
+  "value" : [25]
 }

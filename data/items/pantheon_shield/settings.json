@@ -1,6 +1,8 @@
 {
+  "name" : "pantheon_shield",
+  "image_path" : "data/graphics/item/pantheon_shield.png",
+  "icon_path" : "data/graphics/item/pantheon_shield_icon.png",
   "stat" : ["hp", "damage"],
   "afix" : ["add_percentage", "add_percentage"],
-  "value" : [10, 10],
-  "image" : ""
+  "value" : [10, 10]
 }

@@ -13,10 +13,10 @@ class Game:
     def __init__(self) -> None:
         pygame.init()
         pygame.mixer.init()
-        # self.window_width = 1920
-        # self.window_height = 1080
-        self.window_width = 1000
-        self.window_height = 700
+        self.window_width = 1920
+        self.window_height = 1080
+        # self.window_width = 1000
+        # self.window_height = 700
         self.screen = pygame.display.set_mode((self.window_width, self.window_height))
         pygame.display.set_caption("Gigachad's Island")
         self.game = True
@@ -49,7 +49,7 @@ class Game:
 
     def generate_level(self):
         level_path = "data/levels/" + random.choice(unpack_column("data/levels/levels.txt"))
-        self.scene = Level(self.window_width, self.window_height, None, level_path, self.return_to_main_menu)
+        self.scene = Level(self.window_width, self.window_height, None, level_path, self.generate_level, self.return_to_main_menu)
 
     def start_game(self):
         self.generate_level()
