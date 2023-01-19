@@ -1,5 +1,9 @@
 {
   "name" : "pantheon_spear",
+  "name_rus" : "Копьё Пантеона",
+  "description_rus" : "Рукой до звёзд не достать, поэтому я целюсь в них копьём.\nУрон +30%",
+  "name_en" : "Pantheon spear",
+  "description_en" : "The stars are beyond my reach, and so I grasp my spear and take aim.",
   "image_path" : "data/graphics/item/pantheon_spear.png",
   "icon_path" : "data/graphics/item/pantheon_spear_icon.png",
   "stat" : ["damage"],

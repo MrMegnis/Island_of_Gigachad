@@ -1,5 +1,9 @@
 {
   "name" : "pantheon_shield",
+  "name_rus" : "Щит Пантеона",
+  "description_rus" : "Щит защищает твоё сердце и сердца тех, кто рядом.\nЗдоровье +10%\nУрон +10%",
+  "name_en" : "Pantheon shield",
+  "description_en" : "Shields defend hearts. Both yours, and those beside you.",
   "image_path" : "data/graphics/item/pantheon_shield.png",
   "icon_path" : "data/graphics/item/pantheon_shield_icon.png",
   "stat" : ["hp", "damage"],

@@ -196,6 +196,6 @@ class Creature(Rectangle):
             self.move()
         self.animator.next_frame()
         self.hb.update(screen)
-        self.draw_hitbox()
+        # self.draw_hitbox()
         self.draw(screen)
         # self.weapon.draw_weapon_range()

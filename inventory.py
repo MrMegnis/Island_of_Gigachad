@@ -17,6 +17,16 @@ class Inventory(Rectangle):
         self.open_key = open_key
         self.is_open = False
         self.can_interact = True
+        self.name_font = pygame.font.Font(None, 50)
+        self.name_left = self.rect.left + 303
+        self.name_top = self.rect.top + 3
+        self.name_color = (227, 159, 0)
+        self.description_font = pygame.font.Font(None, 40)
+        self.description_left = self.rect.left + 303
+        self.description_top = self.rect.top + 90
+        self.description_space = 30
+        self.description_string_max_len = 500
+        self.description_color = (227, 159, 0)
         self.item_image_left = self.rect.left + 33
         self.item_image_top = self.rect.top + 30
         self.item_icon_left = self.rect.left + 36
@@ -26,20 +36,14 @@ class Inventory(Rectangle):
         self.items_buttons = Horizontal_Layout(self.rect.left + 36, self.rect.top + 495, self.item_icon_space)
         self.selected = None
 
-    def set_selected(self, item):
-        self.selected = item
-
-    def clear_selected(self):
-        self.selected = None
-
     def add_item(self, settigns_path):
         item = Item(self.item_image_left, self.item_image_top, self.item_icon_left, self.item_icon_top, self.owner,
                     settigns_path)
         if item.name not in self.items_amount.keys():
             self.items.add(item)
             self.item_icon_left += self.item_icon_size[0] + self.item_icon_space
-            self.items_amount[item.name] = (item, 1)
-            button = Button(0, 0, self.set_selected, self.items_amount[item.name][0], size=(144, 144), color="purple")
+            self.items_amount[item.name] = [item, 1]
+            button = Button(0, 0, self.set_selected, [self.items_amount[item.name][0]], size=(144, 144), color="purple")
             self.items_buttons.add_widget(button)
         else:
             self.items_amount[item.name][1] += 1
@@ -53,6 +57,41 @@ class Inventory(Rectangle):
         else:
             self.can_interact = True
 
+    def set_selected(self, item):
+        self.selected = item
+
+    def clear_selected(self):
+        self.selected = None
+
+    def draw_selected(self, screen):
+        if not isinstance(self.selected, type(None)):
+            self.selected.draw(screen)
+            name_text = self.name_font.render(self.selected.name, True, self.name_color)
+            screen.blit(name_text, (self.name_left, self.name_top))
+            # print(self.description_font.size(self.selected.description_rus), len(self.selected.description_rus))
+            if self.description_font.size(self.selected.description)[0] > self.description_string_max_len:
+                size = self.description_font.size(self.selected.description)[0] // len(self.selected.description)
+                strings = []
+                string = ""
+                for i in self.selected.description.split(" "):
+                    if "\n" in i:
+                        pref, suf = i.split()
+                        string += pref
+                        strings.append(string)
+                        string = suf + " "
+                    elif len(string + i + " ") * size >= self.description_string_max_len:
+                        strings.append(string)
+                        string = i + " "
+                    else:
+                        string += i + " "
+                strings.append(string)
+                strings.append("Количество: " + str(self.items_amount[self.selected.name][1]))
+            else:
+                strings = [self.selected.description_rus]
+            for index, string in enumerate(strings):
+                description_text = self.description_font.render(string, True, self.description_color)
+                screen.blit(description_text, (self.description_left, self.description_top + self.description_space * index))
+
     def update(self, screen) -> None:
         self.interaction()
         if self.is_open:
@@ -61,5 +100,4 @@ class Inventory(Rectangle):
             # pygame.draw.rect(screen, "yellow", self.items_buttons.rect)
             self.items_buttons.update()
             self.items.update(screen)
-            if not isinstance(self.selected, type(None)):
-                self.selected.draw(screen)
+            self.draw_selected(screen)
