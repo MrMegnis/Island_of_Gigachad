@@ -122,7 +122,6 @@ class Level:
             # layer.append([])
             for i in range(len(raw_enemies[row])):
                 if raw_enemies[row][i] != "-1":
-                    print(i, row, raw_enemies[row][i])
                     enemy = self.create_enemy(i * tile_size, row * tile_size + tile_size)
                     enemies.add(enemy)
         return enemies
