@@ -19,8 +19,8 @@ class Player(Creature):
         self.inventory.add_item("data/items/frostmourne/settings.json")
         self.inventory.add_item("data/items/pantheon_helmet/settings.json")
         self.inventory.add_item("data/items/pantheon_spear/settings.json")
-        # self.inventory.add_item("data/items/pantheon_shield/settings.json")
-        # self.inventory.add_item("data/items/rom/settings.json")
+        self.inventory.add_item("data/items/pantheon_shield/settings.json")
+        self.inventory.add_item("data/items/rom/settings.json")
         self.hb.resize_hb((300, 50))
         self.hb.change_cords(0, 0)
 

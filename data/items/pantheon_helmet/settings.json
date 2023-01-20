@@ -1,5 +1,9 @@
 {
   "name" : "pantheon_helmet",
+  "name_rus" : "Шлем Пантеона",
+  "description_rus" : "Мне нужен шлем, ведь я обычный воин.\nЗдоровье +25%",
+  "name_en" : "Pantheon helmet",
+  "description_en" : "I wear a helm so that I am only a soldier.",
   "image_path" : "data/graphics/item/pantheon_helmet.png",
   "icon_path" : "data/graphics/item/pantheon_helmet_icon.png",
   "stat" : ["hp"],

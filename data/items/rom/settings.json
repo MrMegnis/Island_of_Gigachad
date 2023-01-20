@@ -1,5 +1,9 @@
 {
   "name" : "rom",
+  "name_rus" : "Ром",
+  "description_rus" : "Слово ром и слово смерть для вас означает одно и то же!\nЗдоровье -30%\nУрон +60%",
+  "name_en" : "Rom",
+  "description_en" : "The word rum and the word death mean the same thing to you!",
   "image_path" : "data/graphics/item/rom.png",
   "icon_path" : "data/graphics/item/rom_icon.png",
   "stat" : ["hp", "damage"],

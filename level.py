@@ -31,7 +31,7 @@ class Level:
         self.left = left
         self.top = top
         self.killed_enemies = 0
-        self.player = Player(250, 100, "data/characters/aboba_warrior", end_of_game_func, Movement_Input())
+        self.player = Player(250, 550, "data/characters/aboba_warrior", end_of_game_func, Movement_Input())
         self.camera = Camera(self.player.left, self.player.top)
         # self.player.rect.bottomleft = (96, 672)
         weapon =  Weapon(self.player.hitbox.left, self.player.hitbox.top,
