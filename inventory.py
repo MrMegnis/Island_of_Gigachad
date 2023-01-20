@@ -92,12 +92,18 @@ class Inventory(Rectangle):
                 description_text = self.description_font.render(string, True, self.description_color)
                 screen.blit(description_text, (self.description_left, self.description_top + self.description_space * index))
 
+    def draw(self, screen) -> None:
+        if self.is_open:
+            super(Inventory, self).draw(screen)
+            # self.items_buttons.draw(screen)
+            self.items.update(screen)
+            self.draw_selected(screen)
+
     def update(self, screen) -> None:
         self.interaction()
         if self.is_open:
-            self.items_buttons.draw(screen)
-            self.draw(screen)
+            # self.draw(screen)
             # pygame.draw.rect(screen, "yellow", self.items_buttons.rect)
             self.items_buttons.update()
-            self.items.update(screen)
-            self.draw_selected(screen)
+            # self.items.update(screen)
+            # self.draw_selected(screen)

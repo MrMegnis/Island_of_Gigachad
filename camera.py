@@ -22,6 +22,8 @@ class Camera:
         obj.rect.y += self.dy
         obj.hitbox.x += self.dx
         obj.hitbox.y += self.dy
+        obj.weapon.rect.x += self.dx
+        obj.weapon.rect.y += self.dy
 
     def move_surface(self, surface):
         rect = surface.get_rect()

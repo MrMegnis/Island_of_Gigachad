@@ -26,30 +26,46 @@ class Level_Surface(pygame.Surface):
 class Level:
     def __init__(self, width, height, player, path, end_of_level_func, end_of_game_func, left=0, top=0):
         # super(Level, self).__init__(width, height, path, cell_size, left, top, border)
+
+        # level settings
         self.width = width
         self.height = height
         self.left = left
         self.top = top
         self.killed_enemies = 0
-        self.player = Player(250, 550, "data/characters/aboba_warrior", end_of_game_func, Movement_Input())
+        settings = unpack_json(path+"/settings.json")
+
+        # player setup
+        player_cords = settings["start"]
+        self.player = Player(player_cords[0], player_cords[1], "data/characters/aboba_warrior", end_of_game_func, Movement_Input())
+        self.player.hitbox.y -= self.player.hitbox.size[1]
+        self.player.rect.y -= self.player.hitbox.size[1]
+        weapon = Weapon(self.player.hitbox.left, self.player.hitbox.top,
+                        (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10,
+                        self.player)
+        self.player.add_weapon(weapon)
         self.camera = Camera(self.player.left, self.player.top)
         # self.player.rect.bottomleft = (96, 672)
-        weapon =  Weapon(self.player.hitbox.left, self.player.hitbox.top,
-                   (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10,
-                   self.player)
-        self.player.add_weapon(weapon)
-        self.enemies = pygame.sprite.Group()
+
+        # enemies setup
+        # self.enemies = pygame.sprite.Group()
+        # enemy = Enemy(700, 400, "data/enemies/aboba_warrior", self.enemy_death)
+        # weapon_enemy = Weapon(self.player.hitbox.left, self.player.hitbox.top,
+        #                       (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10, enemy)
+        # enemy.add_weapon(weapon_enemy)
+        # self.enemies.add(enemy)
+        self.enemies = self.load_enemies(path+"/enemies_settings.json")
+
+        # interactive objects setup
+        end_cords = settings["end"]
         self.interact_objs = pygame.sprite.Group()
-        self.interact_objs.add(Intaractable_Object(2592, 2496, pygame.K_e, 100, 1000, end_of_level_func,
-                                                   image="data/graphics/interactavle_objects/tab.png"))
-        enemy = Enemy(700, 400, "data/enemies/aboba_warrior", self.enemy_death)
-        weapon_enemy =  Weapon(self.player.hitbox.left, self.player.hitbox.top,
-                   (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10, enemy)
-        enemy.add_weapon(weapon_enemy)
-        self.enemies.add(enemy)
+        interact_obj = Intaractable_Object(end_cords[0], end_cords[1], pygame.K_e, 100, 1000, end_of_level_func,
+                                                   image="data/graphics/interactavle_objects/tab.png")
+        # interact_obj.rect.y -= interact_obj.rect.size[1]
+        self.interact_objs.add(interact_obj)
 
+        # level setup
         self.layers = self.load_layers(path + "/layers.csv")
-
         self.prototype_obstacles = self.load_obstacles(path)
         self.obstacles = copy(self.prototype_obstacles)
         self.obstacles_surface = Level_Surface((self.width, self.height), True)
@@ -59,14 +75,12 @@ class Level:
         self.obstacles_sprite.rect = self.obstacles_surface.get_rect(topleft=(self.left, self.top))
         self.obstacles_sprite.mask = pygame.mask.from_surface(self.obstacles_sprite.image)
 
-
         self.player_collider = pygame.sprite.Sprite()
         surface = pygame.Surface(self.player.hitbox.size)
         surface.fill("red")
         self.player_collider.image = surface
         self.player_collider.rect = surface.get_rect()
         self.player_collider.mask = pygame.mask.from_surface(self.player_collider.image)
-
 
         self.surface = Level_Surface((self.width, self.height), True)
         self.surface_rect = self.surface.get_rect()
@@ -84,7 +98,34 @@ class Level:
         self.killed_enemies += 1
         item = random.choice(self.items_path)
         self.player.inventory.add_item(item)
-        print(item)
+
+    def create_enemy(self, left, bottom):
+        self.enemies = pygame.sprite.Group()
+        enemy = Enemy(left, bottom, "data/enemies/aboba_warrior", self.enemy_death)
+        enemy.hitbox.y -= enemy.hitbox.size[1]
+        enemy.rect.y -= enemy.hitbox.size[1]
+        # enemy.hb.update(None)
+        # enemy.rect.bottomleft = (left, bottom)
+        # enemy.hitbox.bottomleft =
+        weapon_enemy = Weapon(enemy.hitbox.left, enemy.hitbox.top, (enemy.hitbox.size[0] * 4, enemy.hitbox.size[1]), 10,
+                              enemy)
+        enemy.add_weapon(weapon_enemy)
+        return enemy
+
+    def load_enemies(self, enemies_settings_path):
+        settings = unpack_json(enemies_settings_path)
+        raw_enemies = unpack_csv(settings["enemies_map"], ";")
+        space = settings["space"]
+        enemies = pygame.sprite.Group()
+        tile_size = settings["tile_size"]
+        for row in range(len(raw_enemies)):
+            # layer.append([])
+            for i in range(len(raw_enemies[row])):
+                if raw_enemies[row][i] != "-1":
+                    print(i, row, raw_enemies[row][i])
+                    enemy = self.create_enemy(i * tile_size, row * tile_size + tile_size)
+                    enemies.add(enemy)
+        return enemies
 
     def load_layers(self, layers_path):
         layers = []
@@ -104,7 +145,7 @@ class Level:
         return layers
 
     def load_obstacles(self, path):
-        obstacles_path = path + "/obstacles.txt"
+        obstacles_path = path + "/obstacles.csv"
         tiles_path = path + "/tiles.json"
         obstacles = Layer(self.width, self.height, obstacles_path, tiles_path, self.left, self.top)
         return obstacles
@@ -115,6 +156,10 @@ class Level:
 
     def draw(self, screen):
         screen.blit(self.surface, self.surface.rect)
+        for enemy in self.enemies.sprites():
+            enemy.draw(screen)
+        self.player.draw(screen)
+        self.interact_objs.draw(screen)
 
     def draw_on_surface(self, layers, surface):
         for i in layers:
@@ -144,7 +189,6 @@ class Level:
         collide_func = self.rect_collide_mask
         obstacles = self.obstacles_sprite
         self.player.update_direction()
-        # self.player.update_view()
 
         if collide_func(self.player.next_move(), obstacles):
             self.player.lock_movement()
@@ -182,8 +226,6 @@ class Level:
                 self.player.animator.return_to_main_status()
             self.player.can_jump = True
             self.player.unlock_attack()
-        # Вот это я насрал
-        # print(self.player.animator.status)
         self.player.update(self.enemies.sprites(), screen)
 
     def camera_update(self):
@@ -200,10 +242,12 @@ class Level:
             self.camera.apply_creature(enemy)
 
     def update(self, screen):
+        if not self.player.inventory.is_open:
+            self.camera_update()
+            self.enemies.update(self.player, screen)
+            self.interact_objs.update(self.player, screen)
+            self.player_update(screen)
+        else:
+            self.player.inventory.update(screen)
         # self.obstacles.draw(screen)
-        self.camera_update()
         self.draw(screen)
-        self.enemies.update(self.player, screen)
-        self.interact_objs.update(self.player, screen)
-        self.player_update(screen)
-

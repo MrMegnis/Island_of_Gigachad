@@ -35,6 +35,11 @@ class Enemy(Creature):
         self.last_attack_time = current_time
         super(Enemy, self).apply_damage(enemies)
 
+    def draw(self, screen) -> None:
+        if self.distance_to_player <= max(pygame.display.get_window_size()):
+            super(Enemy, self).draw(screen)
+
+
     def update_direction(self, player):
         if player.hitbox.x < self.hitbox.x:
             self.direction.x = -1
@@ -49,7 +54,8 @@ class Enemy(Creature):
         self.update_distance_to_player(player)
 
         if self.distance_to_player <= max(pygame.display.get_window_size()):
-            self.normalize_weapon()
+            if "attack" not in self.animator.get_status():
+                self.normalize_weapon()
             if self.detection_radius >= self.distance_to_player:
                 self.update_direction(player)
             else:
