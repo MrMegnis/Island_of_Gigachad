@@ -9,6 +9,8 @@ class Item(Rectangle):
         self.icon_left = icon_left
         self.icon_top = icon_top
         self.name = None
+        self.name_rus = None
+        self.description_rus = None
         self.image_icon = None
         self.rect_icon = None
         self.stat = None
@@ -52,6 +54,8 @@ class Item(Rectangle):
     def load_settings(self, path):
         settings = unpack_json(path)
         self.name = settings["name"]
+        self.name =settings["name_rus"]
+        self.description = settings["description_rus"]
         self.image_path = settings["image_path"]
         # self.rect_icon = self.image.get_rect(topleft=(self.left, self.top))
         self.image_icon = load_image(settings["icon_path"])

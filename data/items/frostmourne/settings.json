@@ -1,5 +1,9 @@
 {
   "name" : "frostmourne",
+  "name_rus" : "Морозная Скорбь",
+  "description_rus" : "Получи власть, которая и не снилась твоему отцу!\nУрон +100%\nСкорость передвижения -50%",
+  "name_en" : "Frostmourne",
+  "description_en" : "Got a power that your father never dreamed of!",
   "image_path" : "data/graphics/item/frostmourne.png",
   "icon_path" : "data/graphics/item/frostmourne_icon.png",
   "stat" : ["damage", "move_speed"],

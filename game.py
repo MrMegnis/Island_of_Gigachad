@@ -15,8 +15,8 @@ class Game:
         pygame.mixer.init()
         self.window_width = 1920
         self.window_height = 1080
-        # self.window_width = 1000
-        # self.window_height = 700
+        self.window_width = 1000
+        self.window_height = 700
         self.screen = pygame.display.set_mode((self.window_width, self.window_height))
         pygame.display.set_caption("Gigachad's Island")
         self.game = True
@@ -26,6 +26,7 @@ class Game:
         # self.player = Player(self.tile_size * 3, self.tile_size * 3, "data/characters/aboba_warrior", Movement_Input())
         # self.button = Button(self.tile_size * 10, self.tile_size * 10, self.generate_level, color="red")
         self.main_menu = Main_Menu(self.window_width, self.window_height, self.start_game, self.quit_game)
+        self.level = None
         self.scene = self.main_menu
 
     def return_to_main_menu(self):
@@ -49,7 +50,8 @@ class Game:
 
     def generate_level(self):
         level_path = "data/levels/" + random.choice(unpack_column("data/levels/levels.txt"))
-        self.scene = Level(self.window_width, self.window_height, None, level_path, self.generate_level, self.return_to_main_menu)
+        self.level = Level(self.window_width, self.window_height, None, level_path, self.generate_level, self.return_to_main_menu)
+        self.scene = self.level
 
     def start_game(self):
         self.generate_level()
