@@ -33,8 +33,12 @@ class Level:
         self.left = left
         self.top = top
         self.killed_enemies = 0
-        settings = unpack_json(path+"/settings.json")
 
+        settings = unpack_json(path+"/settings.json")
+        
+        self.player_death = lambda: end_of_game_func(self.killed_enemies, self.player.inventory.get_inventory_size())
+        self.end_of_level = lambda: end_of_level_func(self.killed_enemies, self.player.inventory.get_inventory_size())
+        
         # player setup
         player_cords = settings["start"]
         self.player = Player(player_cords[0], player_cords[1], "data/characters", end_of_game_func, Movement_Input())
@@ -48,12 +52,6 @@ class Level:
         # self.player.rect.bottomleft = (96, 672)
 
         # enemies setup
-        # self.enemies = pygame.sprite.Group()
-        # enemy = Enemy(700, 400, "data/enemies/aboba_warrior", self.enemy_death)
-        # weapon_enemy = Weapon(self.player.hitbox.left, self.player.hitbox.top,
-        #                       (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10, enemy)
-        # enemy.add_weapon(weapon_enemy)
-        # self.enemies.add(enemy)
         self.enemies = self.load_enemies(path+"/enemies_settings.json")
 
         # interactive objects setup
