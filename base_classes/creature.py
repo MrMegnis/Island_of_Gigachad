@@ -175,6 +175,10 @@ class Creature(Rectangle):
         pygame.draw.rect(pygame.display.get_surface(), "green", self.hitbox, 5)
         # pygame.draw.rect(pygame.display.get_surface(), "red", self.rect, 5)
 
+    def draw(self, screen) -> None:
+        super(Creature, self).draw(screen)
+        self.hb.draw(screen)
+
     def update_direction(self, *args, **kwargs):
         self.update_view()
 
@@ -196,6 +200,8 @@ class Creature(Rectangle):
             self.move()
         self.animator.next_frame()
         self.hb.update(screen)
-        # self.draw_hitbox()
-        self.draw(screen)
+        # self.hb.draw(screen)
+        # print(self.hb.background_rect.topleft, self.hitbox.bottomleft)
+        self.draw_hitbox()
+        # self.draw(screen)
         # self.weapon.draw_weapon_range()

@@ -67,9 +67,12 @@ class Health_Bar:
     def unlock_hb_from_owner(self):
         self.lock_on_owner = False
 
-    def update(self, screen):
+    def draw(self, screen):
         self.draw_background(screen)
         self.draw_bar(screen)
+
+    def update(self, screen):
+        # self.draw(screen)
         if self.lock_on_owner:
             self.background_rect.topleft = self.lock_point
             self.bar_rect.center = self.background_rect.center

@@ -26,7 +26,6 @@ class Layer:
             raw_layer = unpack_csv(layer_path, ";")
         # print(raw_layer)
         tiles_data = unpack_json(tiles_path)
-        # print(tiles_data)
         self.tile_size = tiles_data["tile_size"]
         layer = pygame.sprite.Group()
         for row in range(len(raw_layer)):

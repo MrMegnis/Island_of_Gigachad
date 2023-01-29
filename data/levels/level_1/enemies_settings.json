@@ -1,0 +1,5 @@
+{
+  "tile_size" : 96,
+  "enemies_map" : "data/levels/level_1/enemies.csv",
+  "space" : "-1"
+}
