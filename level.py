@@ -2,6 +2,7 @@ import pygame
 import random
 from copy import copy
 from base_classes.layer import Layer
+from scripts.load_image import load_image
 from scripts.unpack_column import unpack_column
 from scripts.unpack_csv import unpack_csv
 from scripts.unpack_json import unpack_json
@@ -63,6 +64,8 @@ class Level:
         self.interact_objs.add(interact_obj)
 
         # level setup
+        self.background = load_image("data/graphics/level/background.png")
+        self.background_rect = self.background.get_rect(topleft = (0, 0))
         self.layers = self.load_layers(path + "/layers.csv")
         self.prototype_obstacles = self.load_obstacles(path)
         self.obstacles = copy(self.prototype_obstacles)
@@ -152,6 +155,7 @@ class Level:
             i.draw(screen)
 
     def draw(self, screen):
+        screen.blit(self.background, self.background_rect)
         screen.blit(self.surface, self.surface.rect)
         for enemy in self.enemies.sprites():
             enemy.draw(screen)
