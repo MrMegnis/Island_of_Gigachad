@@ -59,7 +59,7 @@ class Creature(Rectangle):
         self.weapon.change_damage(self.stats["damage"])
 
     def load_settings(self, path):
-        settings = unpack_json(path + "/settings.json")
+        settings = unpack_json(path + "/" + self.name + "/settings.json")
         hitbox_settings = settings["hitbox"]
         width = hitbox_settings["width"]
         height = hitbox_settings["height"]
@@ -173,7 +173,7 @@ class Creature(Rectangle):
 
     def draw_hitbox(self):
         pygame.draw.rect(pygame.display.get_surface(), "green", self.hitbox, 5)
-        # pygame.draw.rect(pygame.display.get_surface(), "red", self.rect, 5)
+        pygame.draw.rect(pygame.display.get_surface(), "red", self.rect, 5)
 
     def draw(self, screen) -> None:
         super(Creature, self).draw(screen)
@@ -202,6 +202,6 @@ class Creature(Rectangle):
         self.hb.update(screen)
         # self.hb.draw(screen)
         # print(self.hb.background_rect.topleft, self.hitbox.bottomleft)
-        self.draw_hitbox()
+        # self.draw_hitbox()
         # self.draw(screen)
         # self.weapon.draw_weapon_range()

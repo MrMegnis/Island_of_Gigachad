@@ -56,7 +56,7 @@ class Enemy(Creature):
         if self.distance_to_player <= max(pygame.display.get_window_size()):
             if "attack" not in self.animator.get_status():
                 self.normalize_weapon()
-            if self.detection_radius >= self.distance_to_player:
+            if self.detection_radius >= self.distance_to_player and self.rect.bottom >= player.rect.top:
                 self.update_direction(player)
             else:
                 self.direction.x = 0

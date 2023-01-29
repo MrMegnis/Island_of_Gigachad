@@ -35,7 +35,7 @@ class Game:
     def run(self) -> None:
         while self.game:
             # print(self.clock.get_fps())
-            for event in pygame.event.get():
+            for event in pygame.event.get2():
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     self.return_to_main_menu()
                 if event.type == pygame.QUIT:

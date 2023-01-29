@@ -9,13 +9,14 @@ from weapon import Weapon
 
 class Player(Creature):
     def __init__(self, left: int, top: int, settings_path: str, on_death_func, movement_input: Movement_Input, weapon: Weapon = None,
-                 move_speed: int = 500, hp: int = 100, name: str = "aboba_warrior") -> None:
+                 move_speed: int = 500, hp: int = 100, name: str = "livesey") -> None:
         super(Player, self).__init__(left, top, settings_path, on_death_func, weapon, move_speed=move_speed, hp=hp, type_="player",
                                      name=name)
         self.movement_input = movement_input
         self.attack_input = Attack_Input()
         self.jump_input = Jump_Input()
         self.inventory = Inventory(0, 0, "data/graphics/gui/inventory/inventory.png", self)
+        # self.inventory.add_item("data/items/frostmourne/settings.json")
         # self.inventory.add_item("data/items/frostmourne/settings.json")
         # self.inventory.add_item("data/items/pantheon_helmet/settings.json")
         # self.inventory.add_item("data/items/pantheon_spear/settings.json")

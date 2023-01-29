@@ -27,7 +27,6 @@ class Item(Rectangle):
                 value = self.owner.stats[self.stat[i]]
                 value += self.value[i]
                 self.owner.change_stat(self.stat[i], value)
-
             elif self.afix[i] == "multiply":
                 value = self.owner.stats[self.stat[i]]
                 self.owner.stats[self.stat[i]] *= self.value[i]
@@ -51,10 +50,39 @@ class Item(Rectangle):
                 value = int(value)
                 self.owner.change_stat(self.stat[i], value)
 
+    def cancel_afix(self):
+        for i in range(len(self.afix)):
+            if self.afix[i] == "add":
+                value = self.owner.stats[self.stat[i]]
+                value -= self.value[i]
+                self.owner.change_stat(self.stat[i], value)
+            elif self.afix[i] == "multiply":
+                value = self.owner.stats[self.stat[i]]
+                value = self.owner.stats[self.stat[i]] // self.value[i]
+                self.owner.change_stat(self.stat[i], value)
+            elif self.afix[i] == "decrease":
+                value = self.owner.stats[self.stat[i]]
+                value += self.value[i]
+                self.owner.change_stat(self.stat[i], value)
+            elif self.afix[i] == "divide":
+                value = self.owner.stats[self.stat[i]]
+                value *= self.value[i]
+                self.owner.change_stat(self.stat[i], value)
+            elif self.afix[i] == "add_percentage":
+                value = self.owner.stats[self.stat[i]]
+                value = value * 100 / (100 + self.value[i])
+                value = int(value)
+                self.owner.change_stat(self.stat[i], value)
+            elif self.afix[i] == "decrease_percentage":
+                value = self.owner.stats[self.stat[i]]
+                value = value * 100 / (100 - self.value[i])
+                value = int(value)
+                self.owner.change_stat(self.stat[i], value)
+
     def load_settings(self, path):
         settings = unpack_json(path)
         self.name = settings["name"]
-        self.name =settings["name_rus"]
+        self.name = settings["name_rus"]
         self.description = settings["description_rus"]
         self.image_path = settings["image_path"]
         # self.rect_icon = self.image.get_rect(topleft=(self.left, self.top))
