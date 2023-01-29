@@ -41,7 +41,7 @@ class Level:
         
         # player setup
         player_cords = settings["start"]
-        self.player = Player(player_cords[0], player_cords[1], "data/characters", end_of_game_func, Movement_Input())
+        self.player = Player(player_cords[0], player_cords[1], "data/characters", self.player_death, Movement_Input())
         self.player.hitbox.y -= self.player.hitbox.size[1]
         self.player.rect.y -= self.player.hitbox.size[1]
         weapon = Weapon(self.player.hitbox.left, self.player.hitbox.top,
