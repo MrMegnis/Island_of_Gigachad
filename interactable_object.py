@@ -21,4 +21,4 @@ class Intaractable_Object(Rectangle):
 
     def update(self, player, screen) -> None:
         self.try_interact(player)
-        self.draw(screen)
+        # self.draw(screen)
