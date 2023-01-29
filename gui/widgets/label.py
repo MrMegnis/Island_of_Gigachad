@@ -1,6 +1,7 @@
 import pygame
 from base_classes.rectangle import Rectangle
 
+
 class Label(Rectangle):
     def __init__(self, left, top, text: str = "Text", size: int = 50, color: str = "red", background_color="black"):
         self.font = pygame.font.Font(None, size)

@@ -48,6 +48,10 @@ class Inventory(Rectangle):
         else:
             self.items_amount[item.name][1] += 1
 
+    def get_inventory_size(self):
+        print(self.items, self.items_amount)
+        return len(self.items_amount)
+
     def interaction(self):
         keys = pygame.key.get_pressed()
         if keys[self.open_key]:

@@ -31,19 +31,23 @@ class Level:
         self.left = left
         self.top = top
         self.killed_enemies = 0
-        self.player = Player(250, 550, "data/characters/aboba_warrior", end_of_game_func, Movement_Input())
+
+        self.player_death = lambda: end_of_game_func(self.killed_enemies, self.player.inventory.get_inventory_size())
+        self.end_of_level = lambda: end_of_level_func(self.killed_enemies, self.player.inventory.get_inventory_size())
+
+        self.player = Player(250, 550, "data/characters/aboba_warrior", self.player_death, Movement_Input())
         self.camera = Camera(self.player.left, self.player.top)
         # self.player.rect.bottomleft = (96, 672)
-        weapon =  Weapon(self.player.hitbox.left, self.player.hitbox.top,
+        weapon = Weapon(self.player.hitbox.left, self.player.hitbox.top,
                    (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10,
                    self.player)
         self.player.add_weapon(weapon)
         self.enemies = pygame.sprite.Group()
         self.interact_objs = pygame.sprite.Group()
-        self.interact_objs.add(Intaractable_Object(2592, 2496, pygame.K_e, 100, 1000, end_of_level_func,
+        self.interact_objs.add(Intaractable_Object(2592, 2496, pygame.K_e, 100, 1000, self.end_of_level,
                                                    image="data/graphics/interactavle_objects/tab.png"))
         enemy = Enemy(700, 400, "data/enemies/aboba_warrior", self.enemy_death)
-        weapon_enemy =  Weapon(self.player.hitbox.left, self.player.hitbox.top,
+        weapon_enemy = Weapon(self.player.hitbox.left, self.player.hitbox.top,
                    (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10, enemy)
         enemy.add_weapon(weapon_enemy)
         self.enemies.add(enemy)
@@ -59,14 +63,12 @@ class Level:
         self.obstacles_sprite.rect = self.obstacles_surface.get_rect(topleft=(self.left, self.top))
         self.obstacles_sprite.mask = pygame.mask.from_surface(self.obstacles_sprite.image)
 
-
         self.player_collider = pygame.sprite.Sprite()
         surface = pygame.Surface(self.player.hitbox.size)
         surface.fill("red")
         self.player_collider.image = surface
         self.player_collider.rect = surface.get_rect()
         self.player_collider.mask = pygame.mask.from_surface(self.player_collider.image)
-
 
         self.surface = Level_Surface((self.width, self.height), True)
         self.surface_rect = self.surface.get_rect()

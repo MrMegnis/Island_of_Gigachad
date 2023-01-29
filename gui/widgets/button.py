@@ -11,7 +11,7 @@ class Button(Rectangle):
             self.func = func
             self.args = args
             self.kwargs = kwargs
-        self.can_click = True
+        self.can_click = False
 
     def on_click(self):
         self.func(*self.args, **self.kwargs)
