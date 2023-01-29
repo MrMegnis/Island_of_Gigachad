@@ -36,6 +36,10 @@ class Inventory(Rectangle):
         self.items_buttons = Horizontal_Layout(self.rect.left + 36, self.rect.top + 495, self.item_icon_space)
         self.selected = None
 
+        self.drop_button = Button(self.left, self.top, self.decrease_selected_amount,
+                                  image="data/graphics/gui/buttons/drop_button.png")
+        self.drop_button.rect.center = (self.rect.left + 150, self.rect.top + 375)
+
     def add_item(self, settigns_path):
         item = Item(self.item_image_left, self.item_image_top, self.item_icon_left, self.item_icon_top, self.owner,
                     settigns_path)
@@ -47,6 +51,11 @@ class Inventory(Rectangle):
             self.items_buttons.add_widget(button)
         else:
             self.items_amount[item.name][1] += 1
+
+    def decrease_selected_amount(self):
+        if not isinstance(self.selected, type(None)) and self.items_amount[self.selected.name][1] > 1:
+            self.items_amount[self.selected.name][1] -= 1
+            self.selected.cancel_afix()
 
     def interaction(self):
         keys = pygame.key.get_pressed()
@@ -90,7 +99,8 @@ class Inventory(Rectangle):
                 strings = [self.selected.description_rus]
             for index, string in enumerate(strings):
                 description_text = self.description_font.render(string, True, self.description_color)
-                screen.blit(description_text, (self.description_left, self.description_top + self.description_space * index))
+                screen.blit(description_text,
+                            (self.description_left, self.description_top + self.description_space * index))
 
     def draw(self, screen) -> None:
         if self.is_open:
@@ -98,6 +108,7 @@ class Inventory(Rectangle):
             # self.items_buttons.draw(screen)
             self.items.update(screen)
             self.draw_selected(screen)
+            self.drop_button.draw(screen)
 
     def update(self, screen) -> None:
         self.interaction()
@@ -105,5 +116,6 @@ class Inventory(Rectangle):
             # self.draw(screen)
             # pygame.draw.rect(screen, "yellow", self.items_buttons.rect)
             self.items_buttons.update()
+            self.drop_button.update()
             # self.items.update(screen)
             # self.draw_selected(screen)
