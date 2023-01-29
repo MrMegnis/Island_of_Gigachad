@@ -58,20 +58,27 @@ class Game:
             # self.button.draw(self.screen)
             pygame.display.update()
 
-    def new_level(self, enemies_killed, inventory_size):
+    def new_level(self, enemies_killed, inventory_size, level_hardness):
         self.result.levels_passed += 1
         self.result.enemies_killed += enemies_killed
         self.result.inventory_size = inventory_size
-        self.generate_level()
+        self.generate_level(level_hardness)
 
-    def generate_level(self):
+    def generate_level(self, level_hardness):
         level_path = "data/levels/" + random.choice(unpack_column("data/levels/levels.txt"))
-        self.level = Level(self.window_width, self.window_height, None, level_path, self.new_level, self.show_results)
+        if isinstance(self.level, type(None)):
+            player = None
+        else:
+            player = self.level.player
+        self.level = Level(self.window_width, self.window_height, player, level_hardness, level_path, self.new_level,
+                           self.show_results)
+        self.result.inventory = self.level.player.inventory
         self.scene = self.level
 
     def start_game(self):
+        self.level = None
         self.result.reset()
-        self.generate_level()
+        self.new_level(0, 0, 1)
 
     def quit_game(self):
         pygame.quit()

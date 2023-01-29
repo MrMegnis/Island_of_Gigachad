@@ -45,12 +45,13 @@ class Creature(Rectangle):
 
     def change_stat(self, stat, value):
         if stat == "hp":
+            self.current_hp = value - (self.stats[stat] - self.current_hp)
             self.stats[stat] = value
-            self.current_hp = self.stats[stat] - (self.stats[stat] - self.current_hp)
         elif stat == "damage":
             self.stats[stat] = value
         else:
             self.stats[stat] = value
+        self.hb.update_hp()
 
     def add_weapon(self, weapon: Weapon):
         self.weapon = weapon
@@ -64,6 +65,7 @@ class Creature(Rectangle):
         width = hitbox_settings["width"]
         height = hitbox_settings["height"]
         self.hitbox = pygame.rect.Rect(self.left, self.top, width, height)
+        self.hitbox_offset = (hitbox_settings["left"], hitbox_settings["top"])
         self.rect.left = self.left - hitbox_settings["left"]
         self.rect.top = self.top - hitbox_settings["top"]
 

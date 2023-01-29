@@ -57,6 +57,10 @@ class Inventory(Rectangle):
         print(self.items, self.items_amount)
         return len(self.items_amount)
 
+    def get_items_amount(self):
+        print(sum([self.items_amount[i][1] for i in self.items_amount.keys()]))
+        return sum([self.items_amount[i][1] for i in self.items_amount.keys()])
+
     def decrease_selected_amount(self):
         if not isinstance(self.selected, type(None)) and self.items_amount[self.selected.name][1] > 1:
             self.items_amount[self.selected.name][1] -= 1

@@ -28,6 +28,8 @@ class Health_Bar:
         self.update_bar()
 
     def update_bar(self):
+        if self.owner.stats["move_speed"] == 500:
+            print(self.current_hp, self.hp)
         if self.current_hp >= 0:
             percentage = self.current_hp / self.hp
             size = self.bar_rect.size

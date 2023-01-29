@@ -24,8 +24,20 @@ class Level_Surface(pygame.Surface):
         self.rect = self.get_rect()
 
 
+class Background(pygame.sprite.Sprite):
+    def __init__(self, image_path):
+        super(Background, self).__init__()
+        size = pygame.display.get_window_size()
+        self.image = load_image(image_path)
+        self.image = pygame.transform.scale(self.image, size)
+        self.rect = self.image.get_rect(topleft=(0, 0))
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+
 class Level:
-    def __init__(self, width, height, player, path, end_of_level_func, end_of_game_func, left=0, top=0):
+    def __init__(self, width, height, player, level_hardness, path, end_of_level_func, end_of_game_func, left=0, top=0):
         # super(Level, self).__init__(width, height, path, cell_size, left, top, border)
 
         # level settings
@@ -34,39 +46,51 @@ class Level:
         self.left = left
         self.top = top
         self.killed_enemies = 0
+        self.level_hardness = level_hardness
 
-        settings = unpack_json(path+"/settings.json")
-        
+        settings = unpack_json(path + "/settings.json")
+
         self.player_death = lambda: end_of_game_func(self.killed_enemies, self.player.inventory.get_inventory_size())
-        self.end_of_level = lambda: end_of_level_func(self.killed_enemies, self.player.inventory.get_inventory_size())
-        
+        # self.end_of_level = lambda: end_of_level_func(self.killed_enemies, self.player.inventory.get_inventory_size())
+        self.end_of_level = end_of_level_func
+
         # player setup
         player_cords = settings["start"]
-        self.player = Player(player_cords[0], player_cords[1], "data/characters", self.player_death, Movement_Input())
+        if isinstance(player, type(None)):
+            self.player = Player(player_cords[0], player_cords[1], "data/characters", self.player_death, Movement_Input())
+        else:
+            self.player = player
+            self.player.hitbox.topleft = player_cords
+            self.player.rect.topleft = player_cords
+            self.player.rect.left -= self.player.hitbox_offset[0]
+            self.player.rect.top -= self.player.hitbox_offset[1]
         self.player.hitbox.y -= self.player.hitbox.size[1]
         self.player.rect.y -= self.player.hitbox.size[1]
-        weapon = Weapon(self.player.hitbox.left, self.player.hitbox.top,
-                        (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10,
-                        self.player)
-        self.player.add_weapon(weapon)
+        if isinstance(player, type(None)):
+            weapon = Weapon(self.player.hitbox.left, self.player.hitbox.top,
+                            (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10,
+                            self.player)
+            self.player.add_weapon(weapon)
         self.camera = Camera(self.player.left, self.player.top)
         # self.player.rect.bottomleft = (96, 672)
 
         # enemies setup
-        self.enemies = self.load_enemies(path+"/enemies_settings.json")
+        self.enemies = self.load_enemies(path + "/enemies_settings.json")
 
         # interactive objects setup
         end_cords = settings["end"]
         self.interact_objs = pygame.sprite.Group()
-        interact_obj = Intaractable_Object(end_cords[0], end_cords[1], pygame.K_e, 100, 1000, end_of_level_func,
-                                                   image="data/graphics/interactavle_objects/tab.png")
+        interact_obj = Intaractable_Object(end_cords[0], end_cords[1], pygame.K_e, 100, 1000, end_of_level_func, [self.killed_enemies, self.player.inventory.get_inventory_size(), self.level_hardness + 1],
+                                           image="data/graphics/interactavle_objects/tab.png")
         # interact_obj.rect.y -= interact_obj.rect.size[1]
         self.interact_objs.add(interact_obj)
 
         # level setup
-        self.background = load_image("data/graphics/level/background.png")
-        self.background_rect = self.background.get_rect(topleft = (0, 0))
+        self.background = Background("data/graphics/level/background_min_size.png")
+
         self.layers = self.load_layers(path + "/layers.csv")
+        # self.layers.append(self.background)
+        self.layers.reverse()
         self.prototype_obstacles = self.load_obstacles(path)
         self.obstacles = copy(self.prototype_obstacles)
         self.obstacles_surface = Level_Surface((self.width, self.height), True)
@@ -103,6 +127,8 @@ class Level:
     def create_enemy(self, left, bottom):
         self.enemies = pygame.sprite.Group()
         enemy = Enemy(left, bottom, "data/enemies", self.enemy_death)
+        enemy.stats["hp"] *= self.level_hardness
+        enemy.stats["damage"] *= self.level_hardness
         enemy.hitbox.y -= enemy.hitbox.size[1]
         enemy.rect.y -= enemy.hitbox.size[1]
         # enemy.hb.update(None)
@@ -155,7 +181,8 @@ class Level:
             i.draw(screen)
 
     def draw(self, screen):
-        screen.blit(self.background, self.background_rect)
+        screen.fill("blue")
+        # self.background.draw(screen)
         screen.blit(self.surface, self.surface.rect)
         for enemy in self.enemies.sprites():
             enemy.draw(screen)
@@ -252,3 +279,4 @@ class Level:
             self.player.inventory.update(screen)
         # self.obstacles.draw(screen)
         self.draw(screen)
+
