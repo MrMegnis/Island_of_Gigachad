@@ -2,6 +2,7 @@ import pygame
 import random
 from level import Level
 from result import Result
+from music import Music
 from scripts.unpack_column import unpack_column
 from main_menu import Main_Menu
 
@@ -27,16 +28,22 @@ class Game:
         self.clock = pygame.time.Clock()
         self.tile_size = 50
         self.result = Result()
+        self.music = Music()
+        # self.player = Player(self.tile_size * 3, self.tile_size * 3, "data/characters/aboba_warrior", Movement_Input())
+        # self.button = Button(self.tile_size * 10, self.tile_size * 10, self.generate_level, color="red")
         self.level = None
         self.scene = Main_Menu(self.window_width, self.window_height, self.start_game, self.quit_game)
+        self.music.play_rickroll()
 
     def return_to_main_menu(self):
         self.scene = Main_Menu(self.window_width, self.window_height, self.start_game, self.quit_game)
+        self.music.play_rickroll()
 
     def show_results(self, enemies_killed, inventory_size):
         self.result.enemies_killed += enemies_killed
         self.result.inventory_size = inventory_size
         self.scene = self.result.get_result_menu(self.window_width, self.window_height, self.return_to_main_menu)
+        self.music.play_final_music()
 
     def level_passed(self):
         pass
@@ -62,6 +69,7 @@ class Game:
         self.generate_level(level_hardness)
 
     def generate_level(self, level_hardness):
+        self.music.play_main_theme()
         level_path = "data/levels/" + random.choice(unpack_column("data/levels/levels.txt"))
         if isinstance(self.level, type(None)):
             player = None
