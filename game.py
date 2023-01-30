@@ -29,8 +29,6 @@ class Game:
         self.tile_size = 50
         self.result = Result()
         self.music = Music()
-        # self.player = Player(self.tile_size * 3, self.tile_size * 3, "data/characters/aboba_warrior", Movement_Input())
-        # self.button = Button(self.tile_size * 10, self.tile_size * 10, self.generate_level, color="red")
         self.level = None
         self.scene = Main_Menu(self.window_width, self.window_height, self.start_game, self.quit_game)
         self.music.play_rickroll()
