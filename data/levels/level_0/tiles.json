@@ -1,7 +1,0 @@
-{
-  "tile_size" : 64,
-  "." : "",
-  "x" : "data/graphics/level/sand_1.png",
-  "a" : "data/graphics/level/sand_2.png",
-  "b" : "data/graphics/level/sand_3.png"
-}

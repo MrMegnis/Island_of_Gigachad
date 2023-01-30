@@ -52,13 +52,10 @@ class Inventory(Rectangle):
         else:
             self.items_amount[item.name][1] += 1
 
-
     def get_inventory_size(self):
-        print(self.items, self.items_amount)
         return len(self.items_amount)
 
     def get_items_amount(self):
-        print(sum([self.items_amount[i][1] for i in self.items_amount.keys()]))
         return sum([self.items_amount[i][1] for i in self.items_amount.keys()])
 
     def decrease_selected_amount(self):
@@ -86,7 +83,6 @@ class Inventory(Rectangle):
             self.selected.draw(screen)
             name_text = self.name_font.render(self.selected.name, True, self.name_color)
             screen.blit(name_text, (self.name_left, self.name_top))
-            # print(self.description_font.size(self.selected.description_rus), len(self.selected.description_rus))
             if self.description_font.size(self.selected.description)[0] > self.description_string_max_len:
                 size = self.description_font.size(self.selected.description)[0] // len(self.selected.description)
                 strings = []
@@ -114,7 +110,6 @@ class Inventory(Rectangle):
     def draw(self, screen) -> None:
         if self.is_open:
             super(Inventory, self).draw(screen)
-            # self.items_buttons.draw(screen)
             self.items.update(screen)
             self.draw_selected(screen)
             self.drop_button.draw(screen)
@@ -122,9 +117,5 @@ class Inventory(Rectangle):
     def update(self, screen) -> None:
         self.interaction()
         if self.is_open:
-            # self.draw(screen)
-            # pygame.draw.rect(screen, "yellow", self.items_buttons.rect)
             self.items_buttons.update()
             self.drop_button.update()
-            # self.items.update(screen)
-            # self.draw_selected(screen)

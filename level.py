@@ -3,16 +3,15 @@ import random
 from copy import copy
 from base_classes.layer import Layer
 from scripts.load_image import load_image
-from scripts.unpack_column import unpack_column
 from scripts.unpack_csv import unpack_csv
 from scripts.unpack_json import unpack_json
 from enemy import Enemy
 from player import Player
 from input_system.movement_input import Movement_Input
 from interactable_object import Intaractable_Object
-from animator import Animator
 from weapon import Weapon
 from camera import Camera
+from gui.widgets.label import Label
 
 
 class Level_Surface(pygame.Surface):
@@ -38,8 +37,6 @@ class Background(pygame.sprite.Sprite):
 
 class Level:
     def __init__(self, width, height, player, level_hardness, path, end_of_level_func, end_of_game_func, left=0, top=0):
-        # super(Level, self).__init__(width, height, path, cell_size, left, top, border)
-
         # level settings
         self.width = width
         self.height = height
@@ -47,17 +44,18 @@ class Level:
         self.top = top
         self.killed_enemies = 0
         self.level_hardness = level_hardness
+        self.level_hardness_label = Label(0, 100, "Уровень сложности:" + str(self.level_hardness))
 
         settings = unpack_json(path + "/settings.json")
 
         self.player_death = lambda: end_of_game_func(self.killed_enemies, self.player.inventory.get_inventory_size())
-        # self.end_of_level = lambda: end_of_level_func(self.killed_enemies, self.player.inventory.get_inventory_size())
         self.end_of_level = end_of_level_func
 
         # player setup
         player_cords = settings["start"]
         if isinstance(player, type(None)):
-            self.player = Player(player_cords[0], player_cords[1], "data/characters", self.player_death, Movement_Input())
+            self.player = Player(player_cords[0], player_cords[1], "data/characters", self.player_death,
+                                 Movement_Input())
         else:
             self.player = player
             self.player.hitbox.topleft = player_cords
@@ -68,11 +66,11 @@ class Level:
         self.player.rect.y -= self.player.hitbox.size[1]
         if isinstance(player, type(None)):
             weapon = Weapon(self.player.hitbox.left, self.player.hitbox.top,
-                            (self.player.hitbox.size[0] * 4, self.player.hitbox.size[1]), 10,
+                            (self.player.hitbox.size[0] * 2, self.player.hitbox.size[1]), 10,
                             self.player)
             self.player.add_weapon(weapon)
+
         self.camera = Camera(self.player.left, self.player.top)
-        # self.player.rect.bottomleft = (96, 672)
 
         # enemies setup
         self.enemies = self.load_enemies(path + "/enemies_settings.json")
@@ -80,9 +78,10 @@ class Level:
         # interactive objects setup
         end_cords = settings["end"]
         self.interact_objs = pygame.sprite.Group()
-        interact_obj = Intaractable_Object(end_cords[0], end_cords[1], pygame.K_e, 100, 1000, end_of_level_func, [self.killed_enemies, self.player.inventory.get_inventory_size(), self.level_hardness + 1],
+        interact_obj = Intaractable_Object(end_cords[0], end_cords[1], pygame.K_e, 100, 1000, end_of_level_func,
+                                           [self.killed_enemies, self.player.inventory.get_inventory_size(),
+                                            self.level_hardness + 1],
                                            image="data/graphics/interactavle_objects/tab.png")
-        # interact_obj.rect.y -= interact_obj.rect.size[1]
         self.interact_objs.add(interact_obj)
 
         # level setup
@@ -128,15 +127,14 @@ class Level:
         self.enemies = pygame.sprite.Group()
         enemy = Enemy(left, bottom, "data/enemies", self.enemy_death)
         enemy.stats["hp"] *= self.level_hardness
+        enemy.current_hp *= self.level_hardness
         enemy.stats["damage"] *= self.level_hardness
         enemy.hitbox.y -= enemy.hitbox.size[1]
         enemy.rect.y -= enemy.hitbox.size[1]
-        # enemy.hb.update(None)
-        # enemy.rect.bottomleft = (left, bottom)
-        # enemy.hitbox.bottomleft =
-        weapon_enemy = Weapon(enemy.hitbox.left, enemy.hitbox.top, (enemy.hitbox.size[0] * 4, enemy.hitbox.size[1]), 10,
-                              enemy)
+        weapon_enemy = Weapon(enemy.hitbox.left, enemy.hitbox.top, (enemy.hitbox.size[0] * 4, enemy.hitbox.size[1]),
+                              20 * self.level_hardness, enemy)
         enemy.add_weapon(weapon_enemy)
+
         return enemy
 
     def load_enemies(self, enemies_settings_path):
@@ -146,7 +144,6 @@ class Level:
         enemies = pygame.sprite.Group()
         tile_size = settings["tile_size"]
         for row in range(len(raw_enemies)):
-            # layer.append([])
             for i in range(len(raw_enemies[row])):
                 if raw_enemies[row][i] != "-1":
                     enemy = self.create_enemy(i * tile_size, row * tile_size + tile_size)
@@ -156,7 +153,7 @@ class Level:
     def load_layers(self, layers_path):
         layers = []
         data = unpack_csv(layers_path, ";")
-        # print(data)
+
         for i in data:
             layer_path = i[0]
             tiles_path = i[1]
@@ -182,8 +179,8 @@ class Level:
 
     def draw(self, screen):
         screen.fill("blue")
-        # self.background.draw(screen)
         screen.blit(self.surface, self.surface.rect)
+        self.level_hardness_label.draw(screen)
         for enemy in self.enemies.sprites():
             enemy.draw(screen)
         self.player.draw(screen)
@@ -238,13 +235,12 @@ class Level:
                     self.player.update_view()
                     if self.player.animator.status != "jump_" + self.player.view:
                         self.player.animator.set_bool("jump_" + self.player.view, True)
-                    # self.player.animator.return_to_main_status()
         else:
             self.player.lock_attack()
             self.player.gravity_move(self.player.stats["gravity_strength"])
             if "jump" in self.player.animator.status and "jump_" + self.player.view != self.player.animator.get_status():
                 self.player.animator.set_bool("jump_" + self.player.view, True)
-            # print(self.player.animator.status)
+
             if self.player.jump_count == 0 and "fall_" + self.player.view != self.player.animator.get_status():
                 self.player.animator.set_bool("fall_" + self.player.view, True)
             self.player.can_jump = False
@@ -260,10 +256,8 @@ class Level:
         self.camera.update(self.player, self.width, self.height, self.surface)
         self.camera.apply(self.surface)
         self.camera.apply(self.obstacles_sprite)
-        # self.camera.apply(self.obstacles_surface)
+
         self.camera.apply_creature(self.player)
-        # for obstacle in self.obstacles.layer:
-        #     self.camera.apply(obstacle)
         for interactive_obj in self.interact_objs:
             self.camera.apply(interactive_obj)
         for enemy in self.enemies:
@@ -277,6 +271,5 @@ class Level:
             self.player_update(screen)
         else:
             self.player.inventory.update(screen)
-        # self.obstacles.draw(screen)
-        self.draw(screen)
 
+        self.draw(screen)
