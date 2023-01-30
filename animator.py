@@ -49,7 +49,7 @@ class Animator:
             self.booleans[i] = False
 
     def set_bool(self, status, value):
-        if (self.can_interrupt[self.status]) or not(self.booleans[self.status] or self.triggers[self.status]):
+        if (self.can_interrupt[self.status]) or not (self.booleans[self.status] or self.triggers[self.status]):
             if value:
                 self.clear_booleans_and_triggers()
                 self.booleans[status] = value
@@ -58,7 +58,7 @@ class Animator:
                 self.booleans[status] = value
 
     def trigger(self, status):
-        if (self.can_interrupt[self.status]) or not(self.booleans[self.status] or self.triggers[self.status]):
+        if (self.can_interrupt[self.status]) or not (self.booleans[self.status] or self.triggers[self.status]):
             self.clear_booleans_and_triggers()
             self.triggers[status] = True
             self.set_status(status)
@@ -77,13 +77,10 @@ class Animator:
             self.frame_index = (self.frame_index + 1)
             self.frame_change_time = time_now
 
-        # print(self.triggers[self.status], len(self.animation[self.status]), self.status)
         if self.frame_index == len(self.animation[self.status]):
             pass
         if self.triggers[self.status] and self.frame_index == len(self.animation[self.status]):
             for func in self.funcs_on_last_frame:
-                # if self.object.stats["move_speed"] == 500:
-                    # print(func, self.status, self.frame_index, len(self.animation[self.status]))
                 func()
             self.funcs_on_last_frame = []
             self.return_to_main_status()
@@ -95,7 +92,8 @@ class Animator:
         self.main_status = status
 
     def set_status(self, status):
-        if (self.status != status and self.can_interrupt[self.status]) or not(self.booleans[self.status] or self.triggers[self.status]):
+        if (self.status != status and self.can_interrupt[self.status]) or not (
+                self.booleans[self.status] or self.triggers[self.status]):
             self.frame_index = 0
             self.current_time = 0
             self.status = status

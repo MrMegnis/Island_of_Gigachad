@@ -19,17 +19,14 @@ class Layer:
         self.layer = self.load_layer(layer_path, tile_path)
 
     def load_layer(self, layer_path, tiles_path, return_type: str = "surface") -> pygame.sprite.Group:
-        # print(layer_path, tiles_path)
         if layer_path.split(".")[-1] != "csv":
             raw_layer = unpack_layer(layer_path)
         else:
             raw_layer = unpack_csv(layer_path, ";")
-        # print(raw_layer)
         tiles_data = unpack_json(tiles_path)
         self.tile_size = tiles_data["tile_size"]
         layer = pygame.sprite.Group()
         for row in range(len(raw_layer)):
-            # layer.append([])
             for i in range(len(raw_layer[row])):
                 tile_image = tiles_data[raw_layer[row][i]]
                 if tile_image != "":

@@ -35,7 +35,6 @@ class Rectangle(pygame.sprite.Sprite):
 
     def draw(self, screen) -> None:
         screen.blit(self.image, self.rect)
-        # pygame.draw.rect(screen,"red",self.rect)
 
     def collide_with_point(self, pos) -> bool:
         return self.rect.collidepoint(pos[0], pos[1])

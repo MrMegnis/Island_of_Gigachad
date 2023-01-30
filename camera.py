@@ -12,11 +12,7 @@ class Camera:
     def apply(self, obj, do_automatically=False):
         obj.rect.x += self.dx
         obj.rect.y += self.dy
-        # try:
-        #     obj.hitbox.x += self.dx
-        #     obj.hitbox.y += self.dy
-        # except Exception as e:
-        #     pass
+
     def apply_creature(self, obj, do_automatically=False):
         obj.rect.x += self.dx
         obj.rect.y += self.dy

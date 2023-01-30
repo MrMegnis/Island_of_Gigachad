@@ -85,7 +85,6 @@ class Item(Rectangle):
         self.name = settings["name_rus"]
         self.description = settings["description_rus"]
         self.image_path = settings["image_path"]
-        # self.rect_icon = self.image.get_rect(topleft=(self.left, self.top))
         self.image_icon = load_image(settings["icon_path"])
         self.rect_icon = self.image_icon.get_rect(topleft=(self.icon_left, self.icon_top))
         self.stat = settings["stat"]
