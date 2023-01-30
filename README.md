@@ -1,2 +1,3 @@
-# Island_of_Gigachad
-Rouglike platformer game
+# Island of Gigachad
+Roguelike platformer game
+

@@ -3,12 +3,11 @@ from base_classes.rectangle import Rectangle
 
 
 class Weapon(Rectangle):
-    def     __init__(self, left: int, top: int, size: tuple, damage: int, owner) -> None:
+    def __init__(self, left: int, top: int, size: tuple, damage: int, owner) -> None:
         super(Weapon, self).__init__(left, top, size=size)
         self.damage = damage
         self.owner = owner
         owner_damage = self.owner.stats["damage"]
-        # self.owner.change_stat("damage", owner_damage + self.damage)
 
     def set_owner(self, owner):
         self.owner = owner

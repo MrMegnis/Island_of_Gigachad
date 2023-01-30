@@ -8,9 +8,11 @@ from weapon import Weapon
 
 
 class Player(Creature):
-    def __init__(self, left: int, top: int, settings_path: str, on_death_func, movement_input: Movement_Input, weapon: Weapon = None,
+    def __init__(self, left: int, top: int, settings_path: str, on_death_func, movement_input: Movement_Input,
+                 weapon: Weapon = None,
                  move_speed: int = 500, hp: int = 100, name: str = "livesey") -> None:
-        super(Player, self).__init__(left, top, settings_path, on_death_func, weapon, move_speed=move_speed, hp=hp, type_="player",
+        super(Player, self).__init__(left, top, settings_path, on_death_func, weapon, move_speed=move_speed, hp=hp,
+                                     type_="player",
                                      name=name)
         self.movement_input = movement_input
         self.attack_input = Attack_Input()
@@ -29,10 +31,6 @@ class Player(Creature):
         if self.can_attack:
             if attack == "attack":
                 self.attack()
-                # self.inventory.add_item("data/items/rom/settings.json")
-            elif attack == "alter_attack":
-                self.can_attack = False
-                self.weapon.apply_damage([self])
         if "attack" in self.animator.status and self.animator.frame_index == len(
                 self.animator.animation[self.animator.status]) - 2:
             self.apply_damage(enemies)
@@ -43,10 +41,6 @@ class Player(Creature):
     def try_jump(self, jump):
         if jump != "" and self.can_jump:
             self.jump_count = self.stats["jump_height"]
-            # if self.direction.x == -1:
-            #     self.animator.trigger("jump_left")
-            # else:
-            #     self.animator.trigger("jump_right")
             self.animator.set_bool("jump_" + self.view, True)
 
     def draw(self, screen):

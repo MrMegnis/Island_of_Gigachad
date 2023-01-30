@@ -3,10 +3,12 @@ from base_classes.creature import Creature
 
 
 class Enemy(Creature):
-    def __init__(self, left: int, top: int, settings_path: str, on_death_func, weapon=None, move_speed: int = 150, hp: int = 50,
-                 damage: int = 10, detection_radius: int = 300, minimum_range: int = 100, attack_radius=200,
+    def __init__(self, left: int, top: int, settings_path: str, on_death_func, weapon=None, move_speed: int = 150,
+                 hp: int = 50,
+                 damage: int = 20, detection_radius: int = 300, minimum_range: int = 100, attack_radius=200,
                  attack_interval: int = 1000, name: str = "aboba_warrior") -> None:
-        super(Enemy, self).__init__(left, top, settings_path, on_death_func, weapon, move_speed, hp, damage, attack_interval, "enemy",
+        super(Enemy, self).__init__(left, top, settings_path, on_death_func, weapon, move_speed, hp, damage,
+                                    attack_interval, "enemy",
                                     name)
         self.hb.lock_hb_on_owner(self.hitbox.bottomleft)
         self.detection_radius = detection_radius
@@ -39,7 +41,6 @@ class Enemy(Creature):
         if self.distance_to_player <= max(pygame.display.get_window_size()):
             super(Enemy, self).draw(screen)
 
-
     def update_direction(self, player):
         if player.hitbox.x < self.hitbox.x:
             self.direction.x = -1
@@ -66,7 +67,5 @@ class Enemy(Creature):
                 if self.attack_radius >= abs(self.distance_to_player):
                     self.direction.x = 0
                     self.try_attack([player])
-            # self.weapon.draw_weapon_range()
             super(Enemy, self).update(screen)
             self.hb.update_lock_point(self.hitbox.bottomleft)
-        # print(self.can_attack, self.can_move)

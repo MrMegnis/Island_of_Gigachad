@@ -1,2 +1,0 @@
-data/levels/level_0/map.txt
-data/levels/level_0/sand.txt
