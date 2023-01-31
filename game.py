@@ -85,7 +85,7 @@ class Game:
 
     def quit_game(self):
         pygame.quit()
-        exit()
+        exit(0)
 
 
 if __name__ == "__main__":
